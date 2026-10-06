@@ -1,1 +1,1 @@
-# Diagn-stico-
+diagnóstico 
