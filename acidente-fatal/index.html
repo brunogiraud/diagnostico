@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Responda 7 perguntas e veja quais direitos a lei garante à família de quem morreu em acidente de trabalho.">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+<title>Diagnóstico de Acidente de Trabalho Fatal</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: coluna única de questionário, uma pergunta por tela; resultado abre com o veredito e a lista de direitos */
+:root{
+  --bg:#eef2ec; --surface:#ffffff; --ink:#14241a; --muted:#56655b; --line:#cfd8d0;
+  --accent:#1c6a3c; --accent-ink:#ffffff; --soft:#dfeadf;
+  --ok:#1c6a3c; --warn:#9a6200; --crit:#a8281e; --warn-bg:#f6ead0; --crit-bg:#f6dedb;
+  --display:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1712; --surface:#18231c; --ink:#e8efe9; --muted:#9daea2; --line:#2f3f34;
+  --accent:#5fc286; --accent-ink:#08130c; --soft:#203227;
+  --ok:#5fc286; --warn:#e5b453; --crit:#f08a80; --warn-bg:#3a2f14; --crit-bg:#3d1d1a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1712; --surface:#18231c; --ink:#e8efe9; --muted:#9daea2; --line:#2f3f34;
+  --accent:#5fc286; --accent-ink:#08130c; --soft:#203227;
+  --ok:#5fc286; --warn:#e5b453; --crit:#f08a80; --warn-bg:#3a2f14; --crit-bg:#3d1d1a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:20px 40px}
+.wrap{max-width:620px;margin-inline:auto;display:flex;flex-direction:column;gap:20px}
+.test{text-align:center;font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,7vw,40px);line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:700;font-size:22px;line-height:1.2;margin:0;text-wrap:balance}
+h3{font-family:var(--display);font-weight:500;font-size:18px;margin:0}
+p{margin:0}
+.lead{color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.prog{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{flex:1;height:6px;background:var(--soft);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.hint{font-size:14px;color:var(--muted)}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{font:inherit;color:var(--ink);text-align:left;background:var(--bg);border:1.5px solid var(--line);border-radius:6px;padding:13px 14px;cursor:pointer;display:flex;gap:10px;align-items:center;min-width:0}
+.opt:hover{border-color:var(--accent)}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);font-weight:600}
+.opt .box{flex:none;width:18px;height:18px;border:1.5px solid var(--muted);border-radius:3px}
+.opt[aria-pressed="true"] .box{background:var(--accent);border-color:var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;font-weight:600;border-radius:6px;padding:13px 18px;cursor:pointer;border:1.5px solid var(--accent);background:var(--accent);color:var(--accent-ink);text-decoration:none;display:inline-block}
+.btn.zap{display:block;text-align:center;font-size:18px;padding:16px}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.link{font:inherit;background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;padding:6px 0}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+label{font-weight:600;font-size:14px;display:flex;flex-direction:column;gap:6px}
+input[type=text],input[type=tel]{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:6px;padding:12px;width:100%}
+.check{flex-direction:row;font-weight:400;align-items:flex-start;gap:10px}
+.check input{margin-top:4px;width:18px;height:18px;flex:none}
+.err{color:var(--crit);font-size:14px}
+.hero{background:var(--accent);color:var(--accent-ink);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:8px}
+.hero small{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.hero strong{font-family:var(--display);font-size:clamp(24px,6.5vw,30px);line-height:1.1;text-wrap:balance}
+.direitos{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0}
+.direitos li{display:grid;grid-template-columns:26px 1fr;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
+.direitos li:first-child{border-top:0;padding-top:0}
+.tick{width:26px;height:26px;border-radius:50%;background:var(--soft);color:var(--ok);font-weight:700;display:grid;place-items:center;font-size:15px}
+.direitos b{display:block;font-family:var(--display);font-weight:700;font-size:17px;line-height:1.2}
+.direitos span.base{display:block;font-size:13px;color:var(--muted);margin-top:4px}
+.aviso{border-left:3px solid var(--line);padding-left:12px;color:var(--muted);font-size:15px}
+.urg{border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:4px;background:var(--soft)}
+.urg b{font-family:var(--display);font-size:18px;color:var(--ok)}
+.urg.warn{background:var(--warn-bg)} .urg.warn b{color:var(--warn)}
+.urg.crit{background:var(--crit-bg)} .urg.crit b{color:var(--crit)}
+ul,ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.ficha{font-size:14px;white-space:pre-wrap;background:var(--bg);border:1px dashed var(--line);border-radius:6px;padding:12px;font-variant-numeric:tabular-nums}
+.ilustra{display:block;width:100%;max-width:200px;height:auto;border-radius:6px;margin-inline:auto}
+.foot{text-align:center;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <span class="test">Advocacia Carvalho</span>
+  <header class="wrap" style="gap:10px;text-align:center">
+    <h1>A família recebeu tudo a que tem direito?</h1>
+    <p class="lead">Para familiares de quem morreu em acidente de trabalho. Responda 7 perguntas e veja o que a lei garante e o que ainda pode ser conferido.</p>
+  </header>
+  <main id="app" class="panel" aria-live="polite"></main>
+  <p class="foot">Conteúdo informativo, com base na Constituição, no Código Civil, na Lei 8.213/91 e em súmulas do STF e do TST. Não substitui a análise do caso por um advogado. Suas respostas ficam só no seu aparelho e só chegam ao escritório se você enviar a ficha. f1</p>
+</div>
+
+<script>
+const WHATSAPP = "5543984075030";
+const Q = [
+ {id:"parente", t:"Qual é o seu parentesco com quem faleceu?",
+  o:["Esposa, marido ou companheiro(a)","Filho ou filha","Pai ou mãe","Irmão, irmã ou outro familiar"]},
+ {id:"quando", t:"Há quanto tempo aconteceu?",
+  o:["Menos de 1 ano","Entre 1 e 2 anos","Entre 2 e 3 anos","Entre 3 e 5 anos","Mais de 5 anos"]},
+ {id:"vinculo", t:"Como era o trabalho?",
+  o:["Com carteira assinada","Sem registro em carteira","Terceirizado, prestando serviço para outra empresa","Autônomo ou outra forma"]},
+ {id:"como", multi:true, t:"Como aconteceu?", h:"Pode marcar mais de uma opção.",
+  o:["Acidente no local de trabalho","Acidente de trânsito a serviço da empresa","No trajeto entre a casa e o trabalho","Doença causada pelo trabalho","Trabalho de risco: altura, eletricidade, máquinas ou transporte","Faltou equipamento de proteção ou treinamento","Não sei os detalhes"]},
+ {id:"recebeu", multi:true, t:"O que a família já recebeu?", h:"Pode marcar mais de uma opção.",
+  o:["Pensão por morte do INSS","Verbas da rescisão e FGTS","Seguro de vida","Indenização paga pela empresa","Nada até agora"]},
+ {id:"cat", t:"A empresa registrou o acidente no INSS, pela CAT?", h:"CAT é a Comunicação de Acidente de Trabalho.",
+  o:["Sim","Não","Não sei"]},
+ {id:"dep", multi:true, t:"Quem dependia da renda de quem faleceu?", h:"Pode marcar mais de uma opção.",
+  o:["Filhos menores de 16 anos","Filhos de 16 a 21 anos","Esposa, marido ou companheiro(a)","Pai ou mãe","Ninguém dependia"]}
+];
+let step = 0; const A = {}; let contato = null;
+const app = document.getElementById("app");
+const el = (tag, attrs={}, ...kids) => { const e=document.createElement(tag);
+  for(const k in attrs){ if(k==="class")e.className=attrs[k]; else if(k.startsWith("on"))e.addEventListener(k.slice(2),attrs[k]); else e.setAttribute(k,attrs[k]); }
+  kids.flat().forEach(c=>e.append(c)); return e; };
+const total = Q.length + 1;
+function progress(n){ return el("div",{class:"prog"}, el("span",{}, n<=Q.length?`Pergunta ${n} de ${Q.length}`:"Último passo"),
+  el("div",{class:"bar"}, el("i",{style:`width:${Math.round(n/total*100)}%`}))); }
+function back(){ return step>0 ? el("button",{class:"link",type:"button",onclick:()=>{step--;render();}},"Voltar") : ""; }
+
+function render(){ app.replaceChildren(); if(step<Q.length) renderQ(); else if(!contato) renderContato(); else renderResultado(); app.scrollIntoView({block:"nearest"}); }
+
+function renderQ(){ const q=Q[step]; if(q.multi && !A[q.id]) A[q.id]=[];
+  const opts = el("div",{class:"opts",role:"group","aria-label":q.t});
+  let cont;
+  q.o.forEach((txt,i)=>{ const on = q.multi ? A[q.id].includes(i) : A[q.id]===i;
+    const b = el("button",{class:"opt",type:"button","aria-pressed":String(on),onclick:()=>{
+      if(q.multi){ const a=A[q.id]; const p=a.indexOf(i); p<0?a.push(i):a.splice(p,1);
+        b.setAttribute("aria-pressed",String(p<0)); cont.disabled=!a.length; }
+      else { A[q.id]=i; step++; render(); } }}, q.multi?el("span",{class:"box"}):"", el("span",{},txt));
+    opts.append(b); });
+  app.append(progress(step+1), el("h2",{},q.t)); if(q.h) app.append(el("p",{class:"hint"},q.h)); app.append(opts);
+  const row = el("div",{class:"row"});
+  if(q.multi){ cont = el("button",{class:"btn",type:"button",onclick:()=>{step++;render();}},"Continuar"); cont.disabled=!A[q.id].length; row.append(cont); }
+  row.append(back()); app.append(row); }
+
+function renderContato(){ const err = el("p",{class:"err",hidden:""});
+  const nome = el("input",{type:"text",id:"f-nome",autocomplete:"name"});
+  const fone = el("input",{type:"tel",id:"f-fone",autocomplete:"tel",placeholder:"(43) 99999-9999"});
+  const cid = el("input",{type:"text",id:"f-cidade",placeholder:"Ex.: Londrina/PR"});
+  const ok = el("input",{type:"checkbox",id:"f-lgpd"});
+  const form = el("form",{novalidate:"",onsubmit:e=>{ e.preventDefault();
+    const d = fone.value.replace(/\D/g,"");
+    let m = ""; if(nome.value.trim().length<3) m="Informe seu nome."; else if(d.length<10||d.length>13) m="Informe um WhatsApp com DDD."; else if(!cid.value.trim()) m="Informe o município e o estado."; else if(!ok.checked) m="Marque a autorização para ver o resultado.";
+    if(m){ err.textContent=m; err.hidden=false; return; }
+    contato={nome:nome.value.trim(),fone:fone.value.trim(),cidade:cid.value.trim()}; render(); }},
+    el("div",{class:"wrap",style:"gap:14px"},
+      el("label",{},"Nome",nome), el("label",{},"WhatsApp",fone), el("label",{},"Município e estado",cid),
+      el("label",{class:"check"},ok,el("span",{},"Autorizo o uso destes dados para receber o resultado e, se eu quiser, um contato do escritório sobre o meu caso.")),
+      err, el("div",{class:"row"}, el("button",{class:"btn",type:"submit"},"Ver meu diagnóstico"), back())));
+  app.append(progress(total), el("h2",{},"Seu diagnóstico está pronto"), el("p",{class:"hint"},"Informe seu nome e contato. O resultado aparece na tela em seguida."), form); }
+
+function avaliar(){ const has=(id,i)=>A[id].includes(i);
+  const t=A.quando, nada=has("recebeu",4), temDep=!has("dep",4)||A.parente<=1;
+  const risco=has("como",4), culpa=has("como",5);
+  const titulo = nada ? "A lei garante direitos à família que podem não ter sido pagos" : "Há direitos da família que ainda podem ser conferidos";
+  const sub = "A morte em acidente de trabalho gera direitos perante o INSS e perante a empresa. Um não substitui o outro.";
+  const D = [];
+  if(!has("recebeu",0)) D.push(["Pensão por morte do INSS, sem tempo mínimo de contribuição",
+    "Quando a morte decorre de acidente de trabalho, os dependentes têm direito à pensão mesmo que o trabalhador tivesse pouco tempo de contribuição.","Lei 8.213/91, arts. 26, II, e 74"]);
+  else D.push(["A pensão do INSS pode ter sido calculada como morte comum",
+    "Se o benefício não foi registrado como decorrente de acidente de trabalho, o valor pode ser menor do que o devido e pode ser revisto.","Emenda Constitucional 103/2019, arts. 23 e 26"]);
+  D.push(["Indenização da empresa, além do que o INSS paga",
+    risco ? "Em atividade de risco, a empresa responde pelo acidente mesmo sem culpa. A indenização não se confunde com o benefício do INSS."
+      : culpa ? "A falta de equipamento de proteção ou de treinamento é um dos principais elementos para demonstrar a culpa da empresa."
+      : "A empresa responde quando teve culpa no acidente ou quando a atividade era de risco. A indenização não se confunde com o benefício do INSS.",
+    "Constituição, art. 7º, XXVIII; Código Civil, art. 927; Súmula 229 do STF"]);
+  D.push(["Reparação pelo sofrimento dos familiares",
+    "Cônjuge, filhos e pais podem pedir, em nome próprio, a indenização pelo dano moral causado pela perda.","Código Civil, arts. 186 e 927"]);
+  if(temDep) D.push(["Pensão mensal paga pela empresa aos dependentes",
+    "Quem dependia da renda do trabalhador pode ter direito a uma pensão mensal da empresa, somada à pensão do INSS.","Código Civil, art. 948, II"]);
+  if(!has("recebeu",3)) D.push(["Reembolso das despesas de funeral",
+    "Os gastos com o funeral e o luto da família entram na indenização.","Código Civil, art. 948, I"]);
+  if(!has("recebeu",1)) D.push(["Verbas da rescisão e saldo do FGTS",
+    "Salários, férias, 13º e o saldo do FGTS do trabalhador são pagos aos dependentes.","Lei 6.858/80"]);
+  if(!has("recebeu",2)) D.push(["Seguro de vida em grupo, se a empresa tinha",
+    "Muitas empresas contratam seguro para os empregados, por conta própria ou por exigência da convenção coletiva. Vale verificar.","Apólice da empresa e convenção coletiva da categoria"]);
+  if(A.vinculo===1) D.push(["A falta de registro não tira os direitos",
+    "O vínculo de emprego pode ser reconhecido na Justiça, e com ele vêm os direitos trabalhistas e previdenciários.","CLT, art. 3º"]);
+  if(A.vinculo===2) D.push(["A empresa onde o serviço era prestado também responde",
+    "Na terceirização, a empresa que contratou o serviço responde pelas obrigações quando a empregadora não paga.","Súmula 331 do TST"]);
+  if(has("como",2)) D.push(["O acidente de trajeto conta para o INSS",
+    "Para os benefícios da Previdência, o acidente no caminho entre a casa e o trabalho é tratado como acidente de trabalho. A responsabilidade da empresa depende das circunstâncias.","Lei 8.213/91, art. 21, IV, d"]);
+  if(A.cat>=1) D.push(["A família pode registrar a CAT se a empresa não registrou",
+    "Os dependentes, o sindicato ou o médico podem fazer a comunicação ao INSS, mesmo fora do prazo.","Lei 8.213/91, art. 22, § 2º"]);
+  if(has("dep",0)) D.push(["O prazo não corre contra filhos menores de 16 anos",
+    "Para eles, a contagem do prazo de prescrição só começa quando completam 16 anos.","Código Civil, art. 198, I"]);
+  const U = [["","Ainda há tempo, e agir cedo preserva as provas","Testemunhas, laudos e registros da empresa se perdem com o passar dos meses."],
+    ["warn","O prazo mais curto pode estar perto do fim","Parte dos pedidos contra a empresa tem prazo de 2 anos, contado da morte."],
+    ["crit","Parte dos prazos pode ter terminado","Ainda pode haver pedidos dentro do prazo, e ele não corre contra filhos menores de 16 anos."],
+    ["crit","Parte dos prazos pode ter terminado","Ainda pode haver pedidos dentro do prazo, e ele não corre contra filhos menores de 16 anos."],
+    ["crit","Os prazos comuns já passaram","Restam situações específicas, como os direitos de filhos menores e a pensão do INSS, que ainda pode ser pedida, com limite nos valores atrasados."]][t];
+  return {titulo,sub,D,U}; }
+
+function passos(){ const p=[]; const has=(id,i)=>A[id].includes(i);
+  if(!has("recebeu",0)) p.push("Peça a pensão por morte no INSS, pelo aplicativo Meu INSS ou pelo telefone 135.");
+  if(A.cat>=1) p.push("Peça à empresa uma cópia da CAT. Se ela não tiver registrado, a própria família pode fazer o registro.");
+  p.push("Não assine acordo nem recibo com a empresa antes de conferir o valor.");
+  p.push("Anote os nomes de quem presenciou o acidente ou trabalhava no mesmo local.");
+  return p; }
+
+function fichaTexto(r){ const lista=(id)=>A[id].map(i=>Q.find(q=>q.id===id).o[i]).join("; ");
+  return `Diagnóstico de Acidente de Trabalho Fatal
+Nome: ${contato.nome}
+WhatsApp: ${contato.fone}
+Cidade: ${contato.cidade}
+Parentesco: ${Q[0].o[A.parente]}
+Quando: ${Q[1].o[A.quando]}
+Vínculo: ${Q[2].o[A.vinculo]}
+Como aconteceu: ${lista("como")}
+Já recebeu: ${lista("recebeu")}
+CAT: ${Q[5].o[A.cat]}
+Dependentes: ${lista("dep")}
+Resultado: ${r.D.length} direitos identificados | ${r.U[1]}`; }
+
+function renderResultado(){ const r=avaliar(); const qual=true;
+  app.append(
+    el("div",{class:"hero"}, el("small",{},`Diagnóstico de ${contato.nome.split(" ")[0]}`), el("strong",{},r.titulo), el("span",{},r.sub)),
+    el("h3",{},r.D.length===1?"O direito que a lei garante à família":`Os ${r.D.length} direitos que a lei garante à família`),
+    el("ul",{class:"direitos"}, r.D.map(d=>el("li",{}, el("span",{class:"tick","aria-hidden":"true"},"✓"), el("div",{}, el("b",{},d[0]), d[1], el("span",{class:"base"},d[2]))))),
+    el("p",{class:"aviso"},"Nenhum valor repara a perda. O que a lei garante é o amparo à família. O resultado de cada pedido depende das provas do acidente e da situação de cada dependente."),
+    el("div",{class:"urg "+r.U[0]}, el("b",{},r.U[1]), el("span",{},r.U[2])),
+    el("h3",{},"O que fazer agora"), el("ol",{},passos().map(t=>el("li",{},t)))
+    );
+  if(qual){ const txt=fichaTexto(r);
+    app.append(el("h3",{},"Quer conversar sobre o caso da sua família?"),
+      el("p",{},"Um advogado do escritório ouve o que aconteceu e explica quais desses direitos se aplicam, sem compromisso. Suas respostas já vão prontas na mensagem."),
+      el("a",{class:"btn zap",href:`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(txt)}`},"Clique e saiba mais"));
+  }
+  app.append(el("button",{class:"link",type:"button",onclick:()=>{step=0;contato=null;for(const k in A)delete A[k];render();}},"Refazer o diagnóstico")); }
+
+render();
+</script>
+</body>
+</html>
