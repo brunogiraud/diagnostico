@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Responda 7 perguntas e veja quais direitos a lei dá à sua dívida rural.">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+<title>Diagnóstico da Dívida Rural</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: coluna única de questionário, uma pergunta por tela; resultado abre com o veredito e a lista de direitos */
+:root{
+  --bg:#eef2ec; --surface:#ffffff; --ink:#14241a; --muted:#56655b; --line:#cfd8d0;
+  --accent:#1c6a3c; --accent-ink:#ffffff; --soft:#dfeadf;
+  --ok:#1c6a3c; --warn:#9a6200; --crit:#a8281e; --warn-bg:#f6ead0; --crit-bg:#f6dedb;
+  --display:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1712; --surface:#18231c; --ink:#e8efe9; --muted:#9daea2; --line:#2f3f34;
+  --accent:#5fc286; --accent-ink:#08130c; --soft:#203227;
+  --ok:#5fc286; --warn:#e5b453; --crit:#f08a80; --warn-bg:#3a2f14; --crit-bg:#3d1d1a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1712; --surface:#18231c; --ink:#e8efe9; --muted:#9daea2; --line:#2f3f34;
+  --accent:#5fc286; --accent-ink:#08130c; --soft:#203227;
+  --ok:#5fc286; --warn:#e5b453; --crit:#f08a80; --warn-bg:#3a2f14; --crit-bg:#3d1d1a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:20px 40px}
+.wrap{max-width:620px;margin-inline:auto;display:flex;flex-direction:column;gap:20px}
+.test{text-align:center;font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,7vw,40px);line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:700;font-size:22px;line-height:1.2;margin:0;text-wrap:balance}
+h3{font-family:var(--display);font-weight:500;font-size:18px;margin:0}
+p{margin:0}
+.lead{color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.prog{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{flex:1;height:6px;background:var(--soft);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.hint{font-size:14px;color:var(--muted)}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{font:inherit;color:var(--ink);text-align:left;background:var(--bg);border:1.5px solid var(--line);border-radius:6px;padding:13px 14px;cursor:pointer;display:flex;gap:10px;align-items:center;min-width:0}
+.opt:hover{border-color:var(--accent)}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);font-weight:600}
+.opt .box{flex:none;width:18px;height:18px;border:1.5px solid var(--muted);border-radius:3px}
+.opt[aria-pressed="true"] .box{background:var(--accent);border-color:var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;font-weight:600;border-radius:6px;padding:13px 18px;cursor:pointer;border:1.5px solid var(--accent);background:var(--accent);color:var(--accent-ink);text-decoration:none;display:inline-block}
+.btn.zap{display:block;text-align:center;font-size:18px;padding:16px}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.link{font:inherit;background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;padding:6px 0}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+label{font-weight:600;font-size:14px;display:flex;flex-direction:column;gap:6px}
+input[type=text],input[type=tel]{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:6px;padding:12px;width:100%}
+.check{flex-direction:row;font-weight:400;align-items:flex-start;gap:10px}
+.check input{margin-top:4px;width:18px;height:18px;flex:none}
+.err{color:var(--crit);font-size:14px}
+.hero{background:var(--accent);color:var(--accent-ink);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:8px}
+.hero small{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.hero strong{font-family:var(--display);font-size:clamp(24px,6.5vw,30px);line-height:1.1;text-wrap:balance}
+.direitos{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0}
+.direitos li{display:grid;grid-template-columns:26px 1fr;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
+.direitos li:first-child{border-top:0;padding-top:0}
+.tick{width:26px;height:26px;border-radius:50%;background:var(--soft);color:var(--ok);font-weight:700;display:grid;place-items:center;font-size:15px}
+.direitos b{display:block;font-family:var(--display);font-weight:700;font-size:17px;line-height:1.2}
+.direitos span.base{display:block;font-size:13px;color:var(--muted);margin-top:4px}
+.aviso{border-left:3px solid var(--line);padding-left:12px;color:var(--muted);font-size:15px}
+.urg{border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:4px;background:var(--soft)}
+.urg b{font-family:var(--display);font-size:18px;color:var(--ok)}
+.urg.warn{background:var(--warn-bg)} .urg.warn b{color:var(--warn)}
+.urg.crit{background:var(--crit-bg)} .urg.crit b{color:var(--crit)}
+ul,ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.ficha{font-size:14px;white-space:pre-wrap;background:var(--bg);border:1px dashed var(--line);border-radius:6px;padding:12px;font-variant-numeric:tabular-nums}
+.ilustra{display:block;width:100%;max-width:200px;height:auto;border-radius:6px;margin-inline:auto}
+.foot{text-align:center;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p style="margin:0;background:#f6ead0;color:#7a4e00;font-weight:600;font-size:14px;text-align:center;border-radius:6px;padding:8px 12px">Demonstração com escritório fictício</p>
+  <span class="test">Escritório Modelo Advogados</span>
+  <header class="wrap" style="gap:10px;text-align:center">
+    <h1>Sua dívida rural pode ser alongada?</h1>
+    <p class="lead">Responda 7 perguntas e veja, em dois minutos, quais direitos a lei dá ao seu caso, qual a urgência e o que fazer agora.</p>
+  </header>
+  <main id="app" class="panel" aria-live="polite"></main>
+  <p class="foot">Conteúdo informativo, com base no Manual de Crédito Rural (MCR 2-6), no Decreto-Lei 167/67 e na Súmula 298 do STJ. Não substitui a análise do contrato por um advogado. Suas respostas ficam só no seu aparelho e só chegam ao escritório se você enviar a ficha. v8</p>
+</div>
+
+<script>
+const WHATSAPP = "5543984075030";
+const MIN_QUALIFICADO = 2; // índice da faixa "R$ 1 a 3 milhões"
+
+const Q = [
+ {id:"valor", t:"Qual o valor total das suas dívidas rurais hoje?", h:"Some todos os contratos, com bancos e cooperativas.",
+  o:["Até R$ 300 mil","De R$ 300 mil a R$ 1 milhão","De R$ 1 a 3 milhões","De R$ 3 a 10 milhões","Acima de R$ 10 milhões"]},
+ {id:"credor", multi:true, t:"Com quais bancos ou cooperativas é a dívida?", h:"Pode marcar mais de um. Toque em todos e depois em Continuar.",
+  o:["Banco do Brasil","Sicredi","Sicoob","Cresol","Bradesco","Santander","Caixa","Revenda, cerealista ou trading","Outro"]},
+ {id:"tipo", multi:true, t:"Que tipo de operação?", h:"Está escrito no título do contrato. Pode marcar mais de uma.",
+  o:["Custeio agrícola ou pecuário","Investimento (máquinas, correção de solo, Pronaf, Pronamp, BNDES)","CPR (Cédula de Produto Rural)","CCB ou capital de giro","Não sei dizer"]},
+ {id:"causa", multi:true, t:"O que impediu o pagamento?", h:"Pode marcar mais de um motivo.",
+  o:["Quebra de safra por seca, geada, chuva ou praga","Queda no preço do produto","Dificuldade para vender a produção","Alta no custo de insumos e juros","Outro motivo"]},
+ {id:"situacao", t:"Em que pé está a dívida?", h:"Escolha a situação mais grave entre os seus contratos.",
+  o:["Em dia, mas não vou conseguir pagar a próxima parcela","Vencida, sem cobrança na Justiça","Recebi notificação, protesto ou negativação","Já existe execução ou busca e apreensão na Justiça","Há leilão ou consolidação do imóvel marcada"]},
+ {id:"pedido", t:"Você já pediu o alongamento ao banco por escrito?",
+  o:["Sim, e foi negada","Sim, e não tive resposta","Só conversei com o gerente","Não pedi"]},
+ {id:"garantia", multi:true, t:"O que foi dado em garantia?", h:"Pode marcar mais de uma.",
+  o:["Imóvel rural (hipoteca ou alienação fiduciária)","Safra, animais ou máquinas (penhor)","Aval de familiar ou terceiro","Não sei dizer"]}
+];
+let step = 0; const A = {}; let contato = null;
+const app = document.getElementById("app");
+const el = (tag, attrs={}, ...kids) => { const e=document.createElement(tag);
+  for(const k in attrs){ if(k==="class")e.className=attrs[k]; else if(k.startsWith("on"))e.addEventListener(k.slice(2),attrs[k]); else e.setAttribute(k,attrs[k]); }
+  kids.flat().forEach(c=>e.append(c)); return e; };
+const total = Q.length + 1;
+function progress(n){ return el("div",{class:"prog"}, el("span",{}, n<=Q.length?`Pergunta ${n} de ${Q.length}`:"Último passo"),
+  el("div",{class:"bar"}, el("i",{style:`width:${Math.round(n/total*100)}%`}))); }
+function back(){ return step>0 ? el("button",{class:"link",type:"button",onclick:()=>{step--;render();}},"Voltar") : ""; }
+
+function render(){ app.replaceChildren(); if(step<Q.length) renderQ(); else if(!contato) renderContato(); else renderResultado(); app.scrollIntoView({block:"nearest"}); }
+
+function renderQ(){ const q=Q[step]; if(q.multi && !A[q.id]) A[q.id]=[];
+  const opts = el("div",{class:"opts",role:"group","aria-label":q.t});
+  let cont;
+  q.o.forEach((txt,i)=>{ const on = q.multi ? A[q.id].includes(i) : A[q.id]===i;
+    const b = el("button",{class:"opt",type:"button","aria-pressed":String(on),onclick:()=>{
+      if(q.multi){ const a=A[q.id]; const p=a.indexOf(i); p<0?a.push(i):a.splice(p,1);
+        b.setAttribute("aria-pressed",String(p<0)); cont.disabled=!a.length; }
+      else { A[q.id]=i; step++; render(); } }}, q.multi?el("span",{class:"box"}):"", el("span",{},txt));
+    opts.append(b); });
+  app.append(progress(step+1), el("h2",{},q.t)); if(q.h) app.append(el("p",{class:"hint"},q.h)); app.append(opts);
+  const row = el("div",{class:"row"});
+  if(q.multi){ cont = el("button",{class:"btn",type:"button",onclick:()=>{step++;render();}},"Continuar"); cont.disabled=!A[q.id].length; row.append(cont); }
+  row.append(back()); app.append(row); }
+
+function renderContato(){ const err = el("p",{class:"err",hidden:""});
+  const nome = el("input",{type:"text",id:"f-nome",autocomplete:"name"});
+  const fone = el("input",{type:"tel",id:"f-fone",autocomplete:"tel",placeholder:"(43) 99999-9999"});
+  const cid = el("input",{type:"text",id:"f-cidade",placeholder:"Ex.: Cascavel/PR"});
+  const ok = el("input",{type:"checkbox",id:"f-lgpd"});
+  const form = el("form",{novalidate:"",onsubmit:e=>{ e.preventDefault();
+    const d = fone.value.replace(/\D/g,"");
+    let m = ""; if(nome.value.trim().length<3) m="Informe seu nome."; else if(d.length<10||d.length>13) m="Informe um WhatsApp com DDD."; else if(!cid.value.trim()) m="Informe o município e o estado."; else if(!ok.checked) m="Marque a autorização para ver o resultado.";
+    if(m){ err.textContent=m; err.hidden=false; return; }
+    contato={nome:nome.value.trim(),fone:fone.value.trim(),cidade:cid.value.trim()}; render(); }},
+    el("div",{class:"wrap",style:"gap:14px"},
+      el("label",{},"Nome",nome), el("label",{},"WhatsApp",fone), el("label",{},"Município e estado da propriedade",cid),
+      el("label",{class:"check"},ok,el("span",{},"Autorizo o uso destes dados para receber o resultado e, se eu quiser, um contato do escritório sobre o meu caso.")),
+      err, el("div",{class:"row"}, el("button",{class:"btn",type:"submit"},"Ver meu diagnóstico"), back())));
+  app.append(progress(total), el("h2",{},"Seu diagnóstico está pronto"), el("p",{class:"hint"},"Diga para quem é. O resultado aparece na tela em seguida."), form); }
+
+function avaliar(){ const has=(id,i)=>A[id].includes(i);
+  const rural = has("tipo",0)||has("tipo",1);
+  const motivoLegal = has("causa",0)||has("causa",1)||has("causa",2);
+  const sit = A.situacao;
+  const titulo = rural&&motivoLegal ? "A lei prevê o alongamento da sua dívida"
+    : (rural||motivoLegal) ? "Há caminhos legais para o seu caso"
+    : "Seu contrato merece uma segunda leitura";
+  const sub = rural&&motivoLegal ? "Suas respostas reúnem os dois requisitos do Manual de Crédito Rural: operação de crédito rural e perda de renda por motivo previsto na norma."
+    : (rural||motivoLegal) ? "Suas respostas apontam parte dos requisitos do alongamento. O que falta se confirma na leitura do contrato."
+    : "O enquadramento no crédito rural depende do contrato, mas juros e encargos podem ser revistos em qualquer caso.";
+  const D = [];
+  if(rural||motivoLegal) D.push(["Alongar é direito seu, não favor do banco",
+    "Comprovada a perda de renda por quebra de safra, queda de preço ou dificuldade de venda, o banco é obrigado a alongar.","Súmula 298 do STJ e MCR 2-6-4"]);
+  if(rural||motivoLegal) D.push(["Prazo novo com os juros do contrato original",
+    "O alongamento mantém os mesmos encargos já contratados. O banco não pode trocar por um contrato novo e mais caro.","MCR 2-6-4"]);
+  if(sit>=1) D.push(["Juros de atraso limitados a 1% ao ano",
+    "Na cédula de crédito rural, a mora não pode passar disso. O que foi cobrado acima pode ser recalculado.","Decreto-Lei 167/67, art. 5º, parágrafo único"]);
+  if(has("causa",3)||has("tipo",2)||has("tipo",3)) D.push(["Juros e encargos abusivos podem ser revistos",
+    "Taxas acima dos limites legais, capitalização não contratada e tarifas indevidas podem ser retiradas do saldo.","Decreto-Lei 167/67 e jurisprudência do STJ"]);
+  if(A.pedido<=1) D.push(["A recusa do banco não encerra o assunto",
+    "Negativa ou silêncio diante de um pedido escrito podem ser levados ao juiz, que pode determinar o alongamento.","Súmula 298 do STJ"]);
+  if(sit>=3) D.push(["A cobrança pode ser suspensa enquanto o direito é discutido",
+    sit===4?"Mesmo com leilão marcado, é possível pedir ao juiz a suspensão quando há direito ao alongamento.":"Com direito ao alongamento, é possível pedir ao juiz a suspensão da execução.","Jurisprudência do STJ sobre alongamento de dívida rural"]);
+  const U = [["","Você está no melhor momento","O pedido feito antes do vencimento é o mais forte. Agindo agora, seu nome e suas garantias ficam preservados."],
+    ["warn","Ainda dá para resolver sem processo","Os encargos de atraso estão correndo. Formalize o pedido sem demora."],
+    ["warn","Ainda dá para resolver sem processo","A cobrança começou. Uma resposta por escrito agora evita que vire ação judicial."],
+    ["crit","Há defesa, e ela tem prazo","O processo não tira o seu direito, mas o prazo de defesa é curto e conta da citação."],
+    ["crit","Ainda há o que fazer, mas é para esta semana","O pedido de suspensão precisa chegar ao juiz antes da data do leilão."]][sit];
+  return {titulo,sub,D,U}; }
+
+function passos(){ const p=[];
+  const sit=A.situacao;
+  if(sit===4) p.push("Reúna o edital ou a notificação do leilão e procure um advogado hoje.");
+  if(sit===3) p.push("Localize a data em que você foi citado no processo. O prazo de defesa conta a partir dela.");
+  if(A.pedido>=2) p.push("Protocole o pedido de alongamento por escrito no banco, com comprovante de entrega. Conversa com o gerente não vale como pedido.");
+  else p.push("Guarde o protocolo do pedido de alongamento e a resposta do banco, se houve. São a principal prova do seu caso.");
+  p.push("Não assine renegociação nem confissão de dívida antes de conferir as taxas. O novo contrato costuma sair do crédito rural e embutir juros maiores.");
+  return p; }
+
+const DOCS = ["Cédula ou contrato e todos os aditivos","Extrato ou planilha de evolução da dívida fornecida pelo banco","Laudo de perdas, notas de venda da safra e decreto de emergência, se houver","Pedido de alongamento protocolado e resposta do banco","Citação, intimação ou edital, se já existe processo"];
+
+function fichaTexto(r){ const lista=(id)=>A[id].map(i=>Q.find(q=>q.id===id).o[i]).join("; ");
+  return `Diagnóstico da Dívida Rural
+Nome: ${contato.nome}
+WhatsApp: ${contato.fone}
+Propriedade: ${contato.cidade}
+Dívida total: ${Q[0].o[A.valor]}
+Credores: ${lista("credor")}
+Operação: ${lista("tipo")}
+Motivo: ${lista("causa")}
+Situação: ${Q[4].o[A.situacao]}
+Pedido de alongamento: ${Q[5].o[A.pedido]}
+Garantia: ${lista("garantia")}
+Resultado: ${r.titulo} | ${r.D.length} direitos identificados`; }
+
+function renderResultado(){ const r=avaliar(); const qual=A.valor>=MIN_QUALIFICADO;
+  app.append(
+    el("div",{class:"hero"}, el("small",{},`Diagnóstico de ${contato.nome.split(" ")[0]}`), el("strong",{},r.titulo), el("span",{},r.sub)),
+    el("h3",{},r.D.length===1?"O direito que a lei dá ao seu caso":`Os ${r.D.length} direitos que a lei dá ao seu caso`),
+    el("ul",{class:"direitos"}, r.D.map(d=>el("li",{}, el("span",{class:"tick","aria-hidden":"true"},"✓"), el("div",{}, el("b",{},d[0]), d[1], el("span",{class:"base"},d[2]))))),
+    el("p",{class:"aviso"},"Alongar não é perdão da dívida. É mais prazo, com os juros do contrato, para pagar com a renda da produção. O resultado depende do seu contrato e da prova da perda."),
+    el("div",{class:"urg "+r.U[0]}, el("b",{},r.U[1]), el("span",{},r.U[2])),
+    el("h3",{},"O que fazer agora"), el("ol",{},passos().map(t=>el("li",{},t)))
+    );
+  if(qual){ const txt=fichaTexto(r);
+    app.append(el("h3",{},"Quer confirmar esses direitos no seu contrato?"),
+      el("p",{},"Um advogado do escritório lê seus contratos e diz quais desses direitos se confirmam. Suas respostas já vão prontas na mensagem."),
+      el("a",{class:"btn zap",href:`https://wa.me/${WHATSAPP}?text=${encodeURIComponent("[DEMONSTRAÇÃO]\n"+txt)}`},"Clique e saiba mais"));
+  } else {
+    app.append(el("p",{class:"hint"},"A análise individual do escritório hoje é voltada a dívidas acima de R$ 1 milhão. Os direitos e os passos acima valem para o seu caso e podem ser levados ao seu advogado ou ao sindicato rural."));
+  }
+  app.append(el("button",{class:"link",type:"button",onclick:()=>{step=0;contato=null;for(const k in A)delete A[k];render();}},"Refazer o diagnóstico")); }
+
+render();
+</script>
+</body>
+</html>

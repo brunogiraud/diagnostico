@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Descubra a taxa real do financiamento do seu caminhão e compare com a média do Banco Central.">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+<title>Calculadora do Financiamento de Caminhão</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: coluna única de questionário, uma pergunta por tela; resultado abre com o veredito e a lista de direitos */
+:root{
+  --bg:#eef2ec; --surface:#ffffff; --ink:#14241a; --muted:#56655b; --line:#cfd8d0;
+  --accent:#1c6a3c; --accent-ink:#ffffff; --soft:#dfeadf;
+  --ok:#1c6a3c; --warn:#9a6200; --crit:#a8281e; --warn-bg:#f6ead0; --crit-bg:#f6dedb;
+  --display:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1712; --surface:#18231c; --ink:#e8efe9; --muted:#9daea2; --line:#2f3f34;
+  --accent:#5fc286; --accent-ink:#08130c; --soft:#203227;
+  --ok:#5fc286; --warn:#e5b453; --crit:#f08a80; --warn-bg:#3a2f14; --crit-bg:#3d1d1a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1712; --surface:#18231c; --ink:#e8efe9; --muted:#9daea2; --line:#2f3f34;
+  --accent:#5fc286; --accent-ink:#08130c; --soft:#203227;
+  --ok:#5fc286; --warn:#e5b453; --crit:#f08a80; --warn-bg:#3a2f14; --crit-bg:#3d1d1a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:20px 40px}
+.wrap{max-width:620px;margin-inline:auto;display:flex;flex-direction:column;gap:20px}
+.test{text-align:center;font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,7vw,40px);line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:700;font-size:22px;line-height:1.2;margin:0;text-wrap:balance}
+h3{font-family:var(--display);font-weight:500;font-size:18px;margin:0}
+p{margin:0}
+.lead{color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.prog{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{flex:1;height:6px;background:var(--soft);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.hint{font-size:14px;color:var(--muted)}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{font:inherit;color:var(--ink);text-align:left;background:var(--bg);border:1.5px solid var(--line);border-radius:6px;padding:13px 14px;cursor:pointer;display:flex;gap:10px;align-items:center;min-width:0}
+.opt:hover{border-color:var(--accent)}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);font-weight:600}
+.opt .box{flex:none;width:18px;height:18px;border:1.5px solid var(--muted);border-radius:3px}
+.opt[aria-pressed="true"] .box{background:var(--accent);border-color:var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;font-weight:600;border-radius:6px;padding:13px 18px;cursor:pointer;border:1.5px solid var(--accent);background:var(--accent);color:var(--accent-ink);text-decoration:none;display:inline-block}
+.btn.zap{display:block;text-align:center;font-size:18px;padding:16px}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.link{font:inherit;background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;padding:6px 0}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+label{font-weight:600;font-size:14px;display:flex;flex-direction:column;gap:6px}
+input[type=text],input[type=tel]{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:6px;padding:12px;width:100%}
+.check{flex-direction:row;font-weight:400;align-items:flex-start;gap:10px}
+.check input{margin-top:4px;width:18px;height:18px;flex:none}
+.err{color:var(--crit);font-size:14px}
+.hero{background:var(--accent);color:var(--accent-ink);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:8px}
+.hero small{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.hero strong{font-family:var(--display);font-size:clamp(24px,6.5vw,30px);line-height:1.1;text-wrap:balance}
+.direitos{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0}
+.direitos li{display:grid;grid-template-columns:26px 1fr;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
+.direitos li:first-child{border-top:0;padding-top:0}
+.tick{width:26px;height:26px;border-radius:50%;background:var(--soft);color:var(--ok);font-weight:700;display:grid;place-items:center;font-size:15px}
+.direitos b{display:block;font-family:var(--display);font-weight:700;font-size:17px;line-height:1.2}
+.direitos span.base{display:block;font-size:13px;color:var(--muted);margin-top:4px}
+.aviso{border-left:3px solid var(--line);padding-left:12px;color:var(--muted);font-size:15px}
+.urg{border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:4px;background:var(--soft)}
+.urg b{font-family:var(--display);font-size:18px;color:var(--ok)}
+.urg.warn{background:var(--warn-bg)} .urg.warn b{color:var(--warn)}
+.urg.crit{background:var(--crit-bg)} .urg.crit b{color:var(--crit)}
+ul,ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.ficha{font-size:14px;white-space:pre-wrap;background:var(--bg);border:1px dashed var(--line);border-radius:6px;padding:12px;font-variant-numeric:tabular-nums}
+.ilustra{display:block;width:100%;max-width:200px;height:auto;border-radius:6px;margin-inline:auto}
+.foot{text-align:center;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+.exemplo{background:var(--warn-bg);color:var(--warn);border-radius:6px;padding:10px 12px;font-size:15px;font-weight:600;text-align:center}
+.campo small{font-weight:400;color:var(--muted);font-size:13px}
+.total{font-family:var(--display);font-weight:700;font-size:clamp(30px,9vw,44px);line-height:1}
+.linhas{display:flex;flex-direction:column;gap:0;margin:0}
+.linhas div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.linhas div:first-child{border-top:0}
+.linhas dt{color:var(--muted)} .linhas dd{margin:0;font-weight:600;white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p style="margin:0;background:#f6ead0;color:#7a4e00;font-weight:600;font-size:14px;text-align:center;border-radius:6px;padding:8px 12px">Demonstração com escritório fictício</p>
+  <span class="test">Escritório Modelo Advogados</span>
+  <header class="wrap" style="gap:10px;text-align:center">
+    <h1>Qual é a taxa real do financiamento do seu caminhão?</h1>
+    <p class="lead">Digite a parcela e o valor financiado. A conta mostra a taxa embutida e compara com a média do Banco Central.</p>
+  </header>
+  <main id="app" class="panel">
+    <p class="exemplo" id="aviso-ex">Exemplo preenchido. Troque pelos números do seu contrato.</p>
+    <form id="form" novalidate class="wrap" style="gap:14px">
+      <label class="campo">Valor financiado (R$) <small>Sem a entrada. Com pontos e vírgula, como 480.000,00.</small><input type="text" inputmode="decimal" id="c-valor" value="480.000,00"></label>
+      <label class="campo">Valor da parcela (R$)<input type="text" inputmode="decimal" id="c-parcela" value="14.900,00"></label>
+      <label class="campo">Número total de parcelas<input type="text" inputmode="numeric" id="c-n" value="60"></label>
+      <label class="campo">Parcelas já pagas<input type="text" inputmode="numeric" id="c-pagas" value="18"></label>
+    </form>
+    <div id="res" class="wrap" style="gap:16px" aria-live="polite"></div>
+  </main>
+  <p class="foot">Estimativa informativa, feita com os números que você digitou e com a taxa média divulgada pelo Banco Central. Não é laudo nem promessa de resultado. O valor real depende da leitura do contrato por um advogado. Nada do que você digita é armazenado. k1</p>
+</div>
+<script>
+const WHATSAPP = "5543984075030";
+// Parâmetros da conta. Atualize a taxa de referência quando o Banco Central divulgar um novo mês.
+const TAXA_REF = 1.45;            // % ao mês: média de mercado, pessoas jurídicas, aquisição de veículos (série 25447 do Banco Central)
+const MES_REF = "agosto de 2026"; // mês da taxa de referência
+const FATOR_ALERTA = 1.5;         // a partir de quantas vezes a média a taxa é destacada como muito acima
+const MIN_BOTAO = 300000;         // valor financiado a partir do qual aparece o botão
+
+function num(s){ s=String(s).trim().replace(/[R$\s%]/g,""); if(!s) return NaN;
+  if(s.includes(",")) s=s.replace(/\./g,"").replace(",","."); else if(/^\d{1,3}(\.\d{3})+$/.test(s)) s=s.replace(/\./g,"");
+  return Number(s); }
+const brl = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:2,maximumFractionDigits:2});
+const pct = v => v.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})+"%";
+function mascara(t, completar){ t=String(t).replace(/[^\d,]/g,""); const i=t.indexOf(",");
+  let int=(i<0?t:t.slice(0,i)).replace(/^0+(?=\d)/,""), dec=i<0?null:t.slice(i+1).replace(/,/g,"").slice(0,2);
+  int=int.replace(/\B(?=(\d{3})+(?!\d))/g,".");
+  if(completar){ if(!int) return ""; return int+","+((dec||"")+"00").slice(0,2); }
+  return dec===null ? int : (int||"0")+","+dec; }
+
+const parcelaDe = (PV,i,n) => PV*i/(1-Math.pow(1+i,-n));
+// Taxa mensal embutida na parcela, por bisseção.
+function taxaReal(PV,PMT,n){ let a=1e-9, b=1; for(let k=0;k<200;k++){ const m=(a+b)/2; if(parcelaDe(PV,m,n)>PMT) b=m; else a=m; } return (a+b)/2; }
+function calcular(PV,PMT,n,pagas){ const i=taxaReal(PV,PMT,n), ref=TAXA_REF/100;
+  const pmtRef=parcelaDe(PV,ref,n), dif=Math.max(0,PMT-pmtRef);
+  return {i, anual:Math.pow(1+i,12)-1, pmtRef, dif, total:dif*n, pago:dif*pagas, vezes:i/ref}; }
+
+const el = (tag, attrs={}, ...kids) => { const e=document.createElement(tag);
+  for(const k in attrs){ if(k==="class")e.className=attrs[k]; else if(k.startsWith("on"))e.addEventListener(k.slice(2),attrs[k]); else e.setAttribute(k,attrs[k]); }
+  kids.flat().forEach(c=>e.append(c)); return e; };
+const res=document.getElementById("res"), avisoEx=document.getElementById("aviso-ex");
+const campos=["c-valor","c-parcela","c-n","c-pagas"].map(id=>document.getElementById(id));
+let editado=false, nomeDigitado="";
+
+campos.forEach((c,k)=>{ c.addEventListener("focus",()=>{ if(!editado) c.select(); });
+  c.addEventListener("input",()=>{ if(k<2) c.value=mascara(c.value,false); editado=true; avisoEx.hidden=true; atualizar(); });
+  if(k<2) c.addEventListener("blur",()=>{ c.value=mascara(c.value,true); }); });
+
+function atualizar(){
+  const PV=num(campos[0].value), PMT=num(campos[1].value), n=Math.round(num(campos[2].value));
+  let pagas=Math.round(num(campos[3].value)); if(isNaN(pagas)) pagas=0;
+  let m="";
+  if(!(PV>=1000)) m="Digite o valor financiado para ver a conta."; else if(!(PMT>0)) m="Digite o valor da parcela."; else if(!(n>=2&&n<=240)) m="Digite o número total de parcelas."; else if(pagas<0||pagas>n) m="Confira as parcelas já pagas. Não podem passar do total."; else if(PMT*n<=PV) m="Confira os valores. A soma das parcelas está menor que o valor financiado."; else if(PMT>=PV) m="Confira o valor da parcela. Ele está maior que o valor financiado.";
+  res.replaceChildren();
+  if(m){ res.append(el("p",{class:"hint"},m)); return; }
+  mostrar(PV,PMT,n,pagas); }
+
+function mostrar(PV,PMT,n,pagas){ const r=calcular(PV,PMT,n,pagas);
+  const acima=r.dif>0.005, muito=r.vezes>=FATOR_ALERTA;
+  const vezesTxt=r.vezes.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1});
+  if(acima){
+    res.append(el("div",{class:"hero"}, el("small",{},editado?"Estimativa acima da média de mercado":"Exemplo de estimativa"), el("span",{class:"total"},brl(r.total)),
+      el("span",{},`É quanto o contrato inteiro custa a mais do que custaria pela taxa média. A taxa embutida na parcela é de ${pct(r.i*100)} ao mês.`)));
+  } else {
+    res.append(el("div",{class:"hero"}, el("small",{},"Resultado"), el("strong",{},"A taxa do contrato está dentro da média de mercado"), el("span",{},`A taxa embutida na parcela é de ${pct(r.i*100)} ao mês, igual ou abaixo da média do Banco Central.`)));
+  }
+  const linhas=el("dl",{class:"linhas"});
+  const linha=(a,b)=>linhas.append(el("div",{}, el("dt",{},a), el("dd",{},b)));
+  linha("Taxa real do seu contrato", `${pct(r.i*100)} ao mês`);
+  linha("O mesmo, ao ano", `${pct(r.anual*100)} ao ano`);
+  linha(`Média do Banco Central (${MES_REF})`, `${pct(TAXA_REF)} ao mês`);
+  if(acima){ linha("Parcela pela taxa média", brl(r.pmtRef)); linha("Diferença em cada parcela", brl(r.dif));
+    if(pagas>0) linha(`Diferença nas ${pagas} parcelas já pagas`, brl(r.pago)); }
+  res.append(el("h3",{},"A conta, passo a passo"), linhas);
+  if(acima) res.append(el("div",{class:"urg "+(muito?"crit":"warn")}, el("b",{},muito?`Sua taxa é ${vezesTxt} vezes a média`:"Sua taxa está acima da média, mas próxima dela"),
+    el("span",{},muito?"Diferença grande em relação à média é o principal indício usado para pedir a revisão dos juros.":"Nesse caso a revisão depende de outros pontos do contrato, como tarifas, seguros e juros sobre juros.")));
+  if(!editado){
+    res.append(el("p",{class:"hint"},"Estes números são de um contrato de exemplo. Toque nos campos acima e digite os dados do seu financiamento para ver a sua conta."));
+  } else if(PV>=MIN_BOTAO){
+    const nome=el("input",{type:"text",id:"c-nome",placeholder:"Seu nome",autocomplete:"name","aria-label":"Seu nome",value:nomeDigitado});
+    const link=el("a",{class:"btn zap"},"Clique e saiba mais");
+    const monta=()=>{ const nm=nome.value.trim(); nomeDigitado=nome.value;
+      link.href=`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`[DEMONSTRAÇÃO]\nCalculadora do Financiamento de Caminhão\n${nm?`Nome: ${nm}\n`:""}Valor financiado: ${brl(PV)}\nParcela: ${brl(PMT)}\nParcelas: ${pagas} pagas de ${n}\nTaxa real: ${pct(r.i*100)} ao mês (média ${pct(TAXA_REF)})\nEstimativa acima da média: ${brl(r.total)}`)}`; };
+    nome.addEventListener("input",monta); monta();
+    res.append(el("h3",{},"Quer conferir essa conta no seu contrato?"), el("p",{},"Um advogado do escritório refaz a conta com o contrato na mão. Seus números já vão prontos na mensagem."), nome, link);
+  } else {
+    res.append(el("p",{class:"hint"},"A análise individual do escritório hoje é voltada a financiamentos acima de R$ 300 mil. A conta acima pode ser levada ao seu advogado ou ao sindicato das transportadoras."));
+  }
+  res.append(
+    el("h3",{},"O que a conta considera"),
+    el("ul",{class:"direitos"},
+      el("li",{}, el("span",{class:"tick","aria-hidden":"true"},"✓"), el("div",{}, el("b",{},"A taxa real sai da parcela, não do papel"), "Como a conta parte do valor da parcela, ela enxerga também tarifas e seguros embutidos no financiamento.")),
+      el("li",{}, el("span",{class:"tick","aria-hidden":"true"},"✓"), el("div",{}, el("b",{},"Juros muito acima da média de mercado podem ser revistos"), "A taxa do contrato pode ser comparada com a média divulgada pelo Banco Central para a mesma operação.", el("span",{class:"base"},"STJ, REsp 1.061.530 (recurso repetitivo)"))),
+      el("li",{}, el("span",{class:"tick","aria-hidden":"true"},"✓"), el("div",{}, el("b",{},"Juros sobre juros só valem se estiverem no contrato"), "A capitalização precisa estar prevista de forma expressa.", el("span",{class:"base"},"Súmulas 539 e 541 do STJ")))),
+    el("p",{class:"aviso"},`Esta é uma estimativa simples, não um laudo. Ela compara com a média de ${MES_REF}, e a comparação correta usa a média do mês em que o contrato foi assinado. Estar acima da média não garante a revisão.`)); }
+
+atualizar();
+</script>
+</body>
+</html>
