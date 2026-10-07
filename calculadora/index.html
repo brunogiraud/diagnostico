@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Calcule uma estimativa de quanto pode ter sido cobrado a mais no seu contrato de crédito rural.">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+<title>Calculadora do Crédito Rural</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: coluna única de questionário, uma pergunta por tela; resultado abre com o veredito e a lista de direitos */
+:root{
+  --bg:#eef2ec; --surface:#ffffff; --ink:#14241a; --muted:#56655b; --line:#cfd8d0;
+  --accent:#1c6a3c; --accent-ink:#ffffff; --soft:#dfeadf;
+  --ok:#1c6a3c; --warn:#9a6200; --crit:#a8281e; --warn-bg:#f6ead0; --crit-bg:#f6dedb;
+  --display:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1712; --surface:#18231c; --ink:#e8efe9; --muted:#9daea2; --line:#2f3f34;
+  --accent:#5fc286; --accent-ink:#08130c; --soft:#203227;
+  --ok:#5fc286; --warn:#e5b453; --crit:#f08a80; --warn-bg:#3a2f14; --crit-bg:#3d1d1a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1712; --surface:#18231c; --ink:#e8efe9; --muted:#9daea2; --line:#2f3f34;
+  --accent:#5fc286; --accent-ink:#08130c; --soft:#203227;
+  --ok:#5fc286; --warn:#e5b453; --crit:#f08a80; --warn-bg:#3a2f14; --crit-bg:#3d1d1a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:20px 40px}
+.wrap{max-width:620px;margin-inline:auto;display:flex;flex-direction:column;gap:20px}
+.test{text-align:center;font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,7vw,40px);line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:700;font-size:22px;line-height:1.2;margin:0;text-wrap:balance}
+h3{font-family:var(--display);font-weight:500;font-size:18px;margin:0}
+p{margin:0}
+.lead{color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.prog{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{flex:1;height:6px;background:var(--soft);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.hint{font-size:14px;color:var(--muted)}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{font:inherit;color:var(--ink);text-align:left;background:var(--bg);border:1.5px solid var(--line);border-radius:6px;padding:13px 14px;cursor:pointer;display:flex;gap:10px;align-items:center;min-width:0}
+.opt:hover{border-color:var(--accent)}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);font-weight:600}
+.opt .box{flex:none;width:18px;height:18px;border:1.5px solid var(--muted);border-radius:3px}
+.opt[aria-pressed="true"] .box{background:var(--accent);border-color:var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;font-weight:600;border-radius:6px;padding:13px 18px;cursor:pointer;border:1.5px solid var(--accent);background:var(--accent);color:var(--accent-ink);text-decoration:none;display:inline-block}
+.btn.zap{display:block;text-align:center;font-size:18px;padding:16px}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.link{font:inherit;background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;padding:6px 0}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+label{font-weight:600;font-size:14px;display:flex;flex-direction:column;gap:6px}
+input[type=text],input[type=tel]{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:6px;padding:12px;width:100%}
+.check{flex-direction:row;font-weight:400;align-items:flex-start;gap:10px}
+.check input{margin-top:4px;width:18px;height:18px;flex:none}
+.err{color:var(--crit);font-size:14px}
+.hero{background:var(--accent);color:var(--accent-ink);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:8px}
+.hero small{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.hero strong{font-family:var(--display);font-size:clamp(24px,6.5vw,30px);line-height:1.1;text-wrap:balance}
+.direitos{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0}
+.direitos li{display:grid;grid-template-columns:26px 1fr;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
+.direitos li:first-child{border-top:0;padding-top:0}
+.tick{width:26px;height:26px;border-radius:50%;background:var(--soft);color:var(--ok);font-weight:700;display:grid;place-items:center;font-size:15px}
+.direitos b{display:block;font-family:var(--display);font-weight:700;font-size:17px;line-height:1.2}
+.direitos span.base{display:block;font-size:13px;color:var(--muted);margin-top:4px}
+.aviso{border-left:3px solid var(--line);padding-left:12px;color:var(--muted);font-size:15px}
+.urg{border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:4px;background:var(--soft)}
+.urg b{font-family:var(--display);font-size:18px;color:var(--ok)}
+.urg.warn{background:var(--warn-bg)} .urg.warn b{color:var(--warn)}
+.urg.crit{background:var(--crit-bg)} .urg.crit b{color:var(--crit)}
+ul,ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.ficha{font-size:14px;white-space:pre-wrap;background:var(--bg);border:1px dashed var(--line);border-radius:6px;padding:12px;font-variant-numeric:tabular-nums}
+.ilustra{display:block;width:100%;max-width:200px;height:auto;border-radius:6px;margin-inline:auto}
+.foot{text-align:center;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+.campo small{font-weight:400;color:var(--muted);font-size:13px}
+.total{font-family:var(--display);font-weight:700;font-size:clamp(30px,9vw,44px);line-height:1}
+.linhas{display:flex;flex-direction:column;gap:0;margin:0}
+.linhas div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.linhas div:first-child{border-top:0}
+.linhas dt{color:var(--muted)} .linhas dd{margin:0;font-weight:600;white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="test">Bortolo &amp; Carvalho Advogados Associados</span>
+  <header class="wrap" style="gap:10px;text-align:center">
+    <h1>Quanto você pode ter pago a mais no crédito rural?</h1>
+    <p class="lead">Informe os números do seu contrato e veja uma estimativa na hora.</p>
+  </header>
+  <main id="app" class="panel" aria-live="polite">
+    <form id="form" novalidate class="wrap" style="gap:14px">
+      <label class="campo">Valor do contrato (R$)<input type="text" inputmode="decimal" id="c-valor" placeholder="Ex.: 1.500.000"></label>
+      <label class="campo">Taxa de juros do contrato (% ao ano)<input type="text" inputmode="decimal" id="c-taxa" placeholder="Ex.: 18,5"></label>
+      <label class="campo">Há quantos anos o contrato foi assinado?<input type="text" inputmode="decimal" id="c-anos" placeholder="Ex.: 3"></label>
+      <label class="campo">Meses em atraso <small>Se está em dia, deixe 0.</small><input type="text" inputmode="numeric" id="c-meses" value="0"></label>
+      <label class="campo">Taxa cobrada no atraso (% ao mês) <small>Está no extrato do banco. Se não souber, deixe em branco.</small><input type="text" inputmode="decimal" id="c-mora" placeholder="Ex.: 2"></label>
+      <p class="err" id="erro" hidden></p>
+      <button class="btn zap" type="submit">Calcular</button>
+    </form>
+    <div id="res" class="wrap" style="gap:16px" hidden></div>
+  </main>
+  <p class="foot">Estimativa informativa, feita com os números que você digitou e com os parâmetros do Decreto-Lei 167/67 e da jurisprudência do STJ. Não é laudo nem promessa de resultado. O valor real depende da leitura do contrato e do extrato por um advogado. Nada do que você digita é armazenado. c1</p>
+</div>
+<script>
+const WHATSAPP = "5543984075030";
+// Parâmetros da conta. Ajuste aqui se a tese do escritório for outra.
+const TETO_JUROS = 12;      // % ao ano, teto usado para os juros do contrato
+const MORA_LEGAL = 1;       // % ao ano, acréscimo máximo no atraso
+const MULTA = 2;            // % sobre o valor, multa admitida no atraso
+const MIN_BOTAO = 300000;   // valor de contrato a partir do qual aparece o botão
+
+function num(s){ s=String(s).trim().replace(/[R$\s%]/g,""); if(!s) return NaN;
+  if(s.includes(",")) s=s.replace(/\./g,"").replace(",","."); else if(/^\d{1,3}(\.\d{3})+$/.test(s)) s=s.replace(/\./g,"");
+  return Number(s); }
+const brl = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0});
+const pct = v => v.toLocaleString("pt-BR",{maximumFractionDigits:2})+"%";
+
+function calcular(P, taxa, anos, meses, mora){
+  const ic=taxa/100, teto=TETO_JUROS/100;
+  const excJuros = ic>teto ? P*(Math.pow(1+ic,anos)-Math.pow(1+teto,anos)) : 0;
+  let excMora = 0;
+  if(meses>0 && mora>0){
+    const cobrado = P*(Math.pow(1+mora/100,meses)-1);
+    const legal = P*(Math.pow(1+Math.min(ic,teto),meses/12)*Math.pow(1+MORA_LEGAL/100,meses/12)-1) + P*MULTA/100;
+    excMora = Math.max(0, cobrado-legal);
+  }
+  return {excJuros, excMora, total: excJuros+excMora};
+}
+
+const el = (tag, attrs={}, ...kids) => { const e=document.createElement(tag);
+  for(const k in attrs){ if(k==="class")e.className=attrs[k]; else if(k.startsWith("on"))e.addEventListener(k.slice(2),attrs[k]); else e.setAttribute(k,attrs[k]); }
+  kids.flat().forEach(c=>e.append(c)); return e; };
+const form=document.getElementById("form"), res=document.getElementById("res"), erro=document.getElementById("erro");
+
+form.addEventListener("submit", e=>{ e.preventDefault();
+  const P=num(document.getElementById("c-valor").value), taxa=num(document.getElementById("c-taxa").value), anos=num(document.getElementById("c-anos").value);
+  let meses=num(document.getElementById("c-meses").value); if(isNaN(meses)) meses=0;
+  let mora=num(document.getElementById("c-mora").value); if(isNaN(mora)) mora=0;
+  let m="";
+  if(!(P>=1000)) m="Informe o valor do contrato."; else if(!(taxa>0&&taxa<=200)) m="Informe a taxa de juros ao ano."; else if(!(anos>0&&anos<=30)) m="Informe há quantos anos o contrato foi assinado."; else if(meses<0||meses>240) m="Confira os meses em atraso."; else if(mora<0||mora>30) m="Confira a taxa cobrada no atraso. Ela é ao mês.";
+  if(m){ erro.textContent=m; erro.hidden=false; return; }
+  erro.hidden=true; mostrar(P,taxa,anos,meses,mora); });
+
+function mostrar(P,taxa,anos,meses,mora){ const r=calcular(P,taxa,anos,meses,mora);
+  form.hidden=true; res.hidden=false; res.replaceChildren();
+  if(r.total>0){
+    res.append(el("div",{class:"hero"}, el("small",{},"Estimativa de cobrança a mais"), el("span",{class:"total"},brl(r.total)), el("span",{},"É o valor que pode ter sido cobrado acima dos limites usados nesta conta.")));
+    const linhas=el("dl",{class:"linhas"});
+    if(r.excJuros>0) linhas.append(el("div",{}, el("dt",{},`Juros acima de ${TETO_JUROS}% ao ano (contrato a ${pct(taxa)})`), el("dd",{},brl(r.excJuros))));
+    if(r.excMora>0) linhas.append(el("div",{}, el("dt",{},`Encargos de atraso acima do limite (${meses} meses a ${pct(mora)} ao mês)`), el("dd",{},brl(r.excMora))));
+    res.append(el("h3",{},"De onde vem esse valor"), linhas);
+  } else {
+    res.append(el("div",{class:"hero"}, el("small",{},"Resultado"), el("strong",{},"Pelos números informados, a taxa está dentro dos limites desta conta"), el("span",{},"Isso não encerra o assunto. O direito ao alongamento não depende da taxa de juros.")));
+  }
+  res.append(
+    el("h3",{},"Os limites que a conta usa"),
+    el("ul",{class:"direitos"},
+      el("li",{}, el("span",{class:"tick","aria-hidden":"true"},"✓"), el("div",{}, el("b",{},`Juros do contrato limitados a ${TETO_JUROS}% ao ano`), "Vale para cédula de crédito rural quando não há autorização do Conselho Monetário Nacional para taxa maior.", el("span",{class:"base"},"Decreto-Lei 167/67, art. 5º, e jurisprudência do STJ"))),
+      el("li",{}, el("span",{class:"tick","aria-hidden":"true"},"✓"), el("div",{}, el("b",{},`No atraso, só ${MORA_LEGAL}% ao ano a mais`), `Os encargos de inadimplência ficam nos juros do contrato, mais ${MORA_LEGAL}% ao ano de mora e multa de ${MULTA}%.`, el("span",{class:"base"},"Decreto-Lei 167/67, art. 5º, parágrafo único")))),
+    el("p",{class:"aviso"},"Esta é uma estimativa simples, não um laudo. Ela não considera amortizações, carência nem a fonte dos recursos do contrato, que podem mudar o resultado para mais ou para menos."));
+  if(P>=MIN_BOTAO){
+    const nome=el("input",{type:"text",id:"c-nome",placeholder:"Seu nome",autocomplete:"name","aria-label":"Seu nome"});
+    const link=el("a",{class:"btn zap"},"Clique e saiba mais");
+    const monta=()=>{ const n=nome.value.trim();
+      link.href=`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Calculadora do Crédito Rural\n${n?`Nome: ${n}\n`:""}Contrato: ${brl(P)}\nTaxa: ${pct(taxa)} ao ano\nAssinado há: ${anos} anos\nAtraso: ${meses} meses${mora?` a ${pct(mora)} ao mês`:""}\nEstimativa de cobrança a mais: ${brl(r.total)}`)}`; };
+    nome.addEventListener("input",monta); monta();
+    res.append(el("h3",{},"Quer conferir esse valor no seu contrato?"), el("p",{},"Um advogado do escritório refaz a conta com o contrato e o extrato. Seus números já vão prontos na mensagem."), nome, link);
+  } else {
+    res.append(el("p",{class:"hint"},"A análise individual do escritório hoje é voltada a contratos acima de R$ 300 mil. A estimativa acima pode ser levada ao seu advogado ou ao sindicato rural."));
+  }
+  res.append(el("button",{class:"link",type:"button",onclick:()=>{res.hidden=true;form.hidden=false;}},"Refazer a conta"));
+  document.getElementById("app").scrollIntoView({block:"nearest"}); }
+</script>
+</body>
+</html>
