@@ -75,6 +75,7 @@ ul,ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
 .ilustra{display:block;width:100%;max-width:200px;height:auto;border-radius:6px;margin-inline:auto}
 .foot{text-align:center;font-size:13px;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+.exemplo{background:var(--warn-bg);color:var(--warn);border-radius:6px;padding:10px 12px;font-size:15px;font-weight:600;text-align:center}
 .campo small{font-weight:400;color:var(--muted);font-size:13px}
 .total{font-family:var(--display);font-weight:700;font-size:clamp(30px,9vw,44px);line-height:1}
 .linhas{display:flex;flex-direction:column;gap:0;margin:0}
@@ -88,21 +89,20 @@ ul,ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
   <span class="test">Bortolo &amp; Carvalho Advogados Associados</span>
   <header class="wrap" style="gap:10px;text-align:center">
     <h1>Quanto você pode ter pago a mais no crédito rural?</h1>
-    <p class="lead">Informe os números do seu contrato e veja uma estimativa na hora.</p>
+    <p class="lead">Digite os números do seu contrato e veja a estimativa mudar na hora.</p>
   </header>
-  <main id="app" class="panel" aria-live="polite">
+  <main id="app" class="panel">
+    <p class="exemplo" id="aviso-ex">Exemplo preenchido. Troque pelos números do seu contrato.</p>
     <form id="form" novalidate class="wrap" style="gap:14px">
-      <label class="campo">Valor do contrato (R$)<input type="text" inputmode="decimal" id="c-valor" placeholder="Ex.: 1.500.000"></label>
-      <label class="campo">Taxa de juros do contrato (% ao ano)<input type="text" inputmode="decimal" id="c-taxa" placeholder="Ex.: 18,5"></label>
-      <label class="campo">Há quantos anos o contrato foi assinado?<input type="text" inputmode="decimal" id="c-anos" placeholder="Ex.: 3"></label>
-      <label class="campo">Meses em atraso <small>Se está em dia, deixe 0.</small><input type="text" inputmode="numeric" id="c-meses" value="0"></label>
-      <label class="campo">Taxa cobrada no atraso (% ao mês) <small>Está no extrato do banco. Se não souber, deixe em branco.</small><input type="text" inputmode="decimal" id="c-mora" placeholder="Ex.: 2"></label>
-      <p class="err" id="erro" hidden></p>
-      <button class="btn zap" type="submit">Calcular</button>
+      <label class="campo">Valor do contrato (R$)<input type="text" inputmode="decimal" id="c-valor" value="1.500.000"></label>
+      <label class="campo">Taxa de juros do contrato (% ao ano)<input type="text" inputmode="decimal" id="c-taxa" value="18,5"></label>
+      <label class="campo">Há quantos anos o contrato foi assinado?<input type="text" inputmode="decimal" id="c-anos" value="3"></label>
+      <label class="campo">Meses em atraso <small>Se está em dia, deixe 0.</small><input type="text" inputmode="numeric" id="c-meses" value="6"></label>
+      <label class="campo">Taxa cobrada no atraso (% ao mês) <small>Está no extrato do banco. Se não souber, deixe em branco.</small><input type="text" inputmode="decimal" id="c-mora" value="2"></label>
     </form>
-    <div id="res" class="wrap" style="gap:16px" hidden></div>
+    <div id="res" class="wrap" style="gap:16px" aria-live="polite"></div>
   </main>
-  <p class="foot">Estimativa informativa, feita com os números que você digitou e com os parâmetros do Decreto-Lei 167/67 e da jurisprudência do STJ. Não é laudo nem promessa de resultado. O valor real depende da leitura do contrato e do extrato por um advogado. Nada do que você digita é armazenado. c1</p>
+  <p class="foot">Estimativa informativa, feita com os números que você digitou e com os parâmetros do Decreto-Lei 167/67 e da jurisprudência do STJ. Não é laudo nem promessa de resultado. O valor real depende da leitura do contrato e do extrato por um advogado. Nada do que você digita é armazenado. c2</p>
 </div>
 <script>
 const WHATSAPP = "5543984075030";
@@ -133,21 +133,27 @@ function calcular(P, taxa, anos, meses, mora){
 const el = (tag, attrs={}, ...kids) => { const e=document.createElement(tag);
   for(const k in attrs){ if(k==="class")e.className=attrs[k]; else if(k.startsWith("on"))e.addEventListener(k.slice(2),attrs[k]); else e.setAttribute(k,attrs[k]); }
   kids.flat().forEach(c=>e.append(c)); return e; };
-const form=document.getElementById("form"), res=document.getElementById("res"), erro=document.getElementById("erro");
+const res=document.getElementById("res"), avisoEx=document.getElementById("aviso-ex");
+const campos=["c-valor","c-taxa","c-anos","c-meses","c-mora"].map(id=>document.getElementById(id));
+let editado=false, nomeDigitado="";
 
-form.addEventListener("submit", e=>{ e.preventDefault();
-  const P=num(document.getElementById("c-valor").value), taxa=num(document.getElementById("c-taxa").value), anos=num(document.getElementById("c-anos").value);
-  let meses=num(document.getElementById("c-meses").value); if(isNaN(meses)) meses=0;
-  let mora=num(document.getElementById("c-mora").value); if(isNaN(mora)) mora=0;
+campos.forEach(c=>{ c.addEventListener("focus",()=>{ if(!editado) c.select(); });
+  c.addEventListener("input",()=>{ editado=true; avisoEx.hidden=true; atualizar(); }); });
+
+function atualizar(){
+  const P=num(campos[0].value), taxa=num(campos[1].value), anos=num(campos[2].value);
+  let meses=num(campos[3].value); if(isNaN(meses)) meses=0;
+  let mora=num(campos[4].value); if(isNaN(mora)) mora=0;
   let m="";
-  if(!(P>=1000)) m="Informe o valor do contrato."; else if(!(taxa>0&&taxa<=200)) m="Informe a taxa de juros ao ano."; else if(!(anos>0&&anos<=30)) m="Informe há quantos anos o contrato foi assinado."; else if(meses<0||meses>240) m="Confira os meses em atraso."; else if(mora<0||mora>30) m="Confira a taxa cobrada no atraso. Ela é ao mês.";
-  if(m){ erro.textContent=m; erro.hidden=false; return; }
-  erro.hidden=true; mostrar(P,taxa,anos,meses,mora); });
+  if(!(P>=1000)) m="Digite o valor do contrato para ver a estimativa."; else if(!(taxa>0&&taxa<=200)) m="Digite a taxa de juros ao ano."; else if(!(anos>0&&anos<=30)) m="Digite há quantos anos o contrato foi assinado."; else if(meses<0||meses>240) m="Confira os meses em atraso."; else if(mora<0||mora>30) m="Confira a taxa cobrada no atraso. Ela é ao mês.";
+  res.replaceChildren();
+  if(m){ res.append(el("p",{class:"hint"},m)); return; }
+  mostrar(P,taxa,anos,meses,mora); }
 
 function mostrar(P,taxa,anos,meses,mora){ const r=calcular(P,taxa,anos,meses,mora);
-  form.hidden=true; res.hidden=false; res.replaceChildren();
+  const rotulo = editado ? "Estimativa de cobrança a mais" : "Exemplo de estimativa";
   if(r.total>0){
-    res.append(el("div",{class:"hero"}, el("small",{},"Estimativa de cobrança a mais"), el("span",{class:"total"},brl(r.total)), el("span",{},"É o valor que pode ter sido cobrado acima dos limites usados nesta conta.")));
+    res.append(el("div",{class:"hero"}, el("small",{},rotulo), el("span",{class:"total"},brl(r.total)), el("span",{},"É o valor que pode ter sido cobrado acima dos limites usados nesta conta.")));
     const linhas=el("dl",{class:"linhas"});
     if(r.excJuros>0) linhas.append(el("div",{}, el("dt",{},`Juros acima de ${TETO_JUROS}% ao ano (contrato a ${pct(taxa)})`), el("dd",{},brl(r.excJuros))));
     if(r.excMora>0) linhas.append(el("div",{}, el("dt",{},`Encargos de atraso acima do limite (${meses} meses a ${pct(mora)} ao mês)`), el("dd",{},brl(r.excMora))));
@@ -155,24 +161,26 @@ function mostrar(P,taxa,anos,meses,mora){ const r=calcular(P,taxa,anos,meses,mor
   } else {
     res.append(el("div",{class:"hero"}, el("small",{},"Resultado"), el("strong",{},"Pelos números informados, a taxa está dentro dos limites desta conta"), el("span",{},"Isso não encerra o assunto. O direito ao alongamento não depende da taxa de juros.")));
   }
-  res.append(
-    el("h3",{},"Os limites que a conta usa"),
-    el("ul",{class:"direitos"},
-      el("li",{}, el("span",{class:"tick","aria-hidden":"true"},"✓"), el("div",{}, el("b",{},`Juros do contrato limitados a ${TETO_JUROS}% ao ano`), "Vale para cédula de crédito rural quando não há autorização do Conselho Monetário Nacional para taxa maior.", el("span",{class:"base"},"Decreto-Lei 167/67, art. 5º, e jurisprudência do STJ"))),
-      el("li",{}, el("span",{class:"tick","aria-hidden":"true"},"✓"), el("div",{}, el("b",{},`No atraso, só ${MORA_LEGAL}% ao ano a mais`), `Os encargos de inadimplência ficam nos juros do contrato, mais ${MORA_LEGAL}% ao ano de mora e multa de ${MULTA}%.`, el("span",{class:"base"},"Decreto-Lei 167/67, art. 5º, parágrafo único")))),
-    el("p",{class:"aviso"},"Esta é uma estimativa simples, não um laudo. Ela não considera amortizações, carência nem a fonte dos recursos do contrato, que podem mudar o resultado para mais ou para menos."));
-  if(P>=MIN_BOTAO){
-    const nome=el("input",{type:"text",id:"c-nome",placeholder:"Seu nome",autocomplete:"name","aria-label":"Seu nome"});
+  if(!editado){
+    res.append(el("p",{class:"hint"},"Este número é de um contrato de exemplo. Toque nos campos acima e digite os dados do seu contrato para ver a sua estimativa."));
+  } else if(P>=MIN_BOTAO){
+    const nome=el("input",{type:"text",id:"c-nome",placeholder:"Seu nome",autocomplete:"name","aria-label":"Seu nome",value:nomeDigitado});
     const link=el("a",{class:"btn zap"},"Clique e saiba mais");
-    const monta=()=>{ const n=nome.value.trim();
+    const monta=()=>{ const n=nome.value.trim(); nomeDigitado=nome.value;
       link.href=`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Calculadora do Crédito Rural\n${n?`Nome: ${n}\n`:""}Contrato: ${brl(P)}\nTaxa: ${pct(taxa)} ao ano\nAssinado há: ${anos} anos\nAtraso: ${meses} meses${mora?` a ${pct(mora)} ao mês`:""}\nEstimativa de cobrança a mais: ${brl(r.total)}`)}`; };
     nome.addEventListener("input",monta); monta();
     res.append(el("h3",{},"Quer conferir esse valor no seu contrato?"), el("p",{},"Um advogado do escritório refaz a conta com o contrato e o extrato. Seus números já vão prontos na mensagem."), nome, link);
   } else {
     res.append(el("p",{class:"hint"},"A análise individual do escritório hoje é voltada a contratos acima de R$ 300 mil. A estimativa acima pode ser levada ao seu advogado ou ao sindicato rural."));
   }
-  res.append(el("button",{class:"link",type:"button",onclick:()=>{res.hidden=true;form.hidden=false;}},"Refazer a conta"));
-  document.getElementById("app").scrollIntoView({block:"nearest"}); }
+  res.append(
+    el("h3",{},"Os limites que a conta usa"),
+    el("ul",{class:"direitos"},
+      el("li",{}, el("span",{class:"tick","aria-hidden":"true"},"✓"), el("div",{}, el("b",{},`Juros do contrato limitados a ${TETO_JUROS}% ao ano`), "Vale para cédula de crédito rural quando não há autorização do Conselho Monetário Nacional para taxa maior.", el("span",{class:"base"},"Decreto-Lei 167/67, art. 5º, e jurisprudência do STJ"))),
+      el("li",{}, el("span",{class:"tick","aria-hidden":"true"},"✓"), el("div",{}, el("b",{},`No atraso, só ${MORA_LEGAL}% ao ano a mais`), `Os encargos de inadimplência ficam nos juros do contrato, mais ${MORA_LEGAL}% ao ano de mora e multa de ${MULTA}%.`, el("span",{class:"base"},"Decreto-Lei 167/67, art. 5º, parágrafo único")))),
+    el("p",{class:"aviso"},"Esta é uma estimativa simples, não um laudo. Ela não considera amortizações, carência nem a fonte dos recursos do contrato, que podem mudar o resultado para mais ou para menos.")); }
+
+atualizar();
 </script>
 </body>
 </html>
