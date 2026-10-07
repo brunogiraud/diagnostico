@@ -91,7 +91,7 @@ ul,ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
 
 <script>
 const WHATSAPP = "5543984075030";
-const MIN_QUALIFICADO = 2; // índice da faixa "R$ 1 a 3 milhões"
+const MIN_QUALIFICADO = 1; // índice da faixa "De R$ 300 mil a R$ 1 milhão"
 
 const Q = [
  {id:"valor", t:"Qual o valor total das dívidas da transportadora hoje?", h:"Some todos os contratos, com bancos e financeiras.",
@@ -219,7 +219,7 @@ function renderResultado(){ const r=avaliar(); const qual=A.valor>=MIN_QUALIFICA
       el("p",{},"Um advogado do escritório lê os contratos da empresa e diz quais desses direitos se confirmam. Suas respostas já vão prontas na mensagem."),
       el("a",{class:"btn zap",href:`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(txt)}`},"Clique e saiba mais"));
   } else {
-    app.append(el("p",{class:"hint"},"A análise individual do escritório hoje é voltada a dívidas acima de R$ 1 milhão. Os direitos e os passos acima valem para o seu caso e podem ser levados ao seu advogado ou ao sindicato das transportadoras."));
+    app.append(el("p",{class:"hint"},"A análise individual do escritório hoje é voltada a dívidas acima de R$ 300 mil. Os direitos e os passos acima valem para o seu caso e podem ser levados ao seu advogado ou ao sindicato das transportadoras."));
   }
   app.append(el("button",{class:"link",type:"button",onclick:()=>{step=0;contato=null;for(const k in A)delete A[k];render();}},"Refazer o diagnóstico")); }
 
