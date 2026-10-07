@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Calcule uma estimativa das verbas da sua rescisão e veja se o valor que você recebeu está completo.">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+<title>Calculadora de Rescisão Trabalhista</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: coluna única de questionário, uma pergunta por tela; resultado abre com o veredito e a lista de direitos */
+:root{
+  --bg:#eef2ec; --surface:#ffffff; --ink:#14241a; --muted:#56655b; --line:#cfd8d0;
+  --accent:#1c6a3c; --accent-ink:#ffffff; --soft:#dfeadf;
+  --ok:#1c6a3c; --warn:#9a6200; --crit:#a8281e; --warn-bg:#f6ead0; --crit-bg:#f6dedb;
+  --display:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1712; --surface:#18231c; --ink:#e8efe9; --muted:#9daea2; --line:#2f3f34;
+  --accent:#5fc286; --accent-ink:#08130c; --soft:#203227;
+  --ok:#5fc286; --warn:#e5b453; --crit:#f08a80; --warn-bg:#3a2f14; --crit-bg:#3d1d1a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1712; --surface:#18231c; --ink:#e8efe9; --muted:#9daea2; --line:#2f3f34;
+  --accent:#5fc286; --accent-ink:#08130c; --soft:#203227;
+  --ok:#5fc286; --warn:#e5b453; --crit:#f08a80; --warn-bg:#3a2f14; --crit-bg:#3d1d1a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:20px 40px}
+.wrap{max-width:620px;margin-inline:auto;display:flex;flex-direction:column;gap:20px}
+.test{text-align:center;font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,7vw,40px);line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:700;font-size:22px;line-height:1.2;margin:0;text-wrap:balance}
+h3{font-family:var(--display);font-weight:500;font-size:18px;margin:0}
+p{margin:0}
+.lead{color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.prog{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{flex:1;height:6px;background:var(--soft);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.hint{font-size:14px;color:var(--muted)}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{font:inherit;color:var(--ink);text-align:left;background:var(--bg);border:1.5px solid var(--line);border-radius:6px;padding:13px 14px;cursor:pointer;display:flex;gap:10px;align-items:center;min-width:0}
+.opt:hover{border-color:var(--accent)}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);font-weight:600}
+.opt .box{flex:none;width:18px;height:18px;border:1.5px solid var(--muted);border-radius:3px}
+.opt[aria-pressed="true"] .box{background:var(--accent);border-color:var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;font-weight:600;border-radius:6px;padding:13px 18px;cursor:pointer;border:1.5px solid var(--accent);background:var(--accent);color:var(--accent-ink);text-decoration:none;display:inline-block}
+.btn.zap{display:block;text-align:center;font-size:18px;padding:16px}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.link{font:inherit;background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;padding:6px 0}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+label{font-weight:600;font-size:14px;display:flex;flex-direction:column;gap:6px}
+input[type=text],input[type=tel]{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:6px;padding:12px;width:100%}
+.check{flex-direction:row;font-weight:400;align-items:flex-start;gap:10px}
+.check input{margin-top:4px;width:18px;height:18px;flex:none}
+.err{color:var(--crit);font-size:14px}
+.hero{background:var(--accent);color:var(--accent-ink);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:8px}
+.hero small{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.hero strong{font-family:var(--display);font-size:clamp(24px,6.5vw,30px);line-height:1.1;text-wrap:balance}
+.direitos{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0}
+.direitos li{display:grid;grid-template-columns:26px 1fr;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
+.direitos li:first-child{border-top:0;padding-top:0}
+.tick{width:26px;height:26px;border-radius:50%;background:var(--soft);color:var(--ok);font-weight:700;display:grid;place-items:center;font-size:15px}
+.direitos b{display:block;font-family:var(--display);font-weight:700;font-size:17px;line-height:1.2}
+.direitos span.base{display:block;font-size:13px;color:var(--muted);margin-top:4px}
+.aviso{border-left:3px solid var(--line);padding-left:12px;color:var(--muted);font-size:15px}
+.urg{border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:4px;background:var(--soft)}
+.urg b{font-family:var(--display);font-size:18px;color:var(--ok)}
+.urg.warn{background:var(--warn-bg)} .urg.warn b{color:var(--warn)}
+.urg.crit{background:var(--crit-bg)} .urg.crit b{color:var(--crit)}
+ul,ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.ficha{font-size:14px;white-space:pre-wrap;background:var(--bg);border:1px dashed var(--line);border-radius:6px;padding:12px;font-variant-numeric:tabular-nums}
+.ilustra{display:block;width:100%;max-width:200px;height:auto;border-radius:6px;margin-inline:auto}
+.foot{text-align:center;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+.exemplo{background:var(--warn-bg);color:var(--warn);border-radius:6px;padding:10px 12px;font-size:15px;font-weight:600;text-align:center}
+select,input[type=date]{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:6px;padding:12px;width:100%}
+fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+legend{font-weight:600;font-size:14px;padding:0;margin-bottom:6px}
+.campo small{font-weight:400;color:var(--muted);font-size:13px}
+.total{font-family:var(--display);font-weight:700;font-size:clamp(30px,9vw,44px);line-height:1}
+.linhas{display:flex;flex-direction:column;gap:0;margin:0}
+.linhas div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.linhas div:first-child{border-top:0}
+.linhas dt{color:var(--muted)} .linhas dd{margin:0;font-weight:600;white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="test">Bortolo &amp; Carvalho Advogados Associados</span>
+  <header class="wrap" style="gap:10px;text-align:center">
+    <h1>Sua rescisão foi paga certo?</h1>
+    <p class="lead">Informe os dados do seu contrato de trabalho e compare a estimativa com o valor que você recebeu.</p>
+  </header>
+  <main id="app" class="panel">
+    <p class="exemplo" id="aviso-ex">Exemplo preenchido. Troque pelos dados do seu contrato.</p>
+    <form id="form" novalidate class="wrap" style="gap:14px">
+      <label class="campo">Último salário mensal (R$) <small>Com pontos e vírgula, como 3.200,00.</small><input type="text" inputmode="decimal" id="c-sal" value="3.200,00"></label>
+      <label class="campo">Data de admissão<input type="date" id="c-adm" value="2021-03-10"></label>
+      <label class="campo">Último dia trabalhado<input type="date" id="c-sai" value="2026-08-20"></label>
+      <label class="campo">Como o contrato terminou?<select id="c-tipo">
+        <option value="sjc">Fui demitido sem justa causa</option>
+        <option value="ped">Pedi demissão</option>
+        <option value="aco">Acordo com a empresa</option>
+        <option value="jc">Fui demitido por justa causa</option></select></label>
+      <label class="check"><input type="checkbox" id="c-venc" checked><span>Tinha férias vencidas, de mais de um ano sem tirar</span></label>
+      <label class="campo">Quanto você recebeu na rescisão (R$) <small>Se ainda não recebeu, deixe em branco.</small><input type="text" inputmode="decimal" id="c-rec" value="9.500,00"></label>
+      <fieldset><legend>Também aconteceu com você?</legend>
+        <label class="check"><input type="checkbox" class="extra" value="Horas extras sem pagamento"><span>Fazia horas extras sem receber</span></label>
+        <label class="check"><input type="checkbox" class="extra" value="Período sem registro em carteira"><span>Trabalhei um período sem registro em carteira</span></label>
+        <label class="check"><input type="checkbox" class="extra" value="Salário pago por fora"><span>Parte do salário era paga por fora</span></label>
+        <label class="check"><input type="checkbox" class="extra" value="Acidente ou doença do trabalho"><span>Sofri acidente ou doença por causa do trabalho</span></label>
+      </fieldset>
+    </form>
+    <div id="res" class="wrap" style="gap:16px" aria-live="polite"></div>
+  </main>
+  <p class="foot">Estimativa informativa, feita com os dados que você digitou e com as regras da CLT. Os valores são brutos, sem descontos de INSS e imposto de renda. Não é cálculo oficial nem promessa de resultado. Nada do que você digita é armazenado. r1</p>
+</div>
+<script>
+const WHATSAPP = "5543984075030";
+// Parâmetros da conta.
+const FGTS_ALIQ = 0.08;   // depósito mensal de FGTS sobre o salário
+const MIN_BOTAO = 0;      // diferença mínima em reais para aparecer o botão (0 = sempre)
+
+function num(s){ s=String(s).trim().replace(/[R$\s%]/g,""); if(!s) return NaN;
+  if(s.includes(",")) s=s.replace(/\./g,"").replace(",","."); else if(/^\d{1,3}(\.\d{3})+$/.test(s)) s=s.replace(/\./g,"");
+  return Number(s); }
+const brl = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:2,maximumFractionDigits:2});
+function mascara(t, completar){ t=String(t).replace(/[^\d,]/g,""); const i=t.indexOf(",");
+  let int=(i<0?t:t.slice(0,i)).replace(/^0+(?=\d)/,""), dec=i<0?null:t.slice(i+1).replace(/,/g,"").slice(0,2);
+  int=int.replace(/\B(?=(\d{3})+(?!\d))/g,".");
+  if(completar){ if(!int) return ""; return int+","+((dec||"")+"00").slice(0,2); }
+  return dec===null ? int : (int||"0")+","+dec; }
+
+const DIA=86400000;
+const data = s => { const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||""); return m ? new Date(Date.UTC(+m[1],+m[2]-1,+m[3])) : null; };
+const dmy = d => d.toISOString().slice(0,10).split("-").reverse().join("/");
+const maisDias = (d,n) => new Date(d.getTime()+n*DIA);
+function maisMeses(d,n){ const y=d.getUTCFullYear(), m=d.getUTCMonth()+n, ult=new Date(Date.UTC(y,m+1,0)).getUTCDate(); return new Date(Date.UTC(y,m,Math.min(d.getUTCDate(),ult))); }
+function mesesCompletos(a,b){ let m=(b.getUTCFullYear()-a.getUTCFullYear())*12+b.getUTCMonth()-a.getUTCMonth(); if(maisMeses(a,m)>b) m--; return Math.max(0,m); }
+// Meses que contam para o 13º no ano da data de referência: vale o mês com 15 dias ou mais de trabalho.
+function meses13(adm,ref){ const y=ref.getUTCFullYear(); let n=0;
+  for(let m=0;m<=ref.getUTCMonth();m++){ const ini=new Date(Date.UTC(y,m,1)), fim=new Date(Date.UTC(y,m+1,0));
+    const a=adm>ini?adm:ini, b=ref<fim?ref:fim; if(b>=a && (b-a)/DIA+1>=15) n++; } return n; }
+// Meses de férias proporcionais desde o último aniversário do contrato: fração de 15 dias ou mais conta um mês.
+function mesesFerias(adm,ref){ const tot=mesesCompletos(adm,ref), ini=maisMeses(adm,Math.floor(tot/12)*12);
+  let m=mesesCompletos(ini,ref); if((ref-maisMeses(ini,m))/DIA+1>=15) m++; return Math.min(12,m); }
+
+function calcular(sal,adm,sai,tipo,vencidas){
+  const anos=Math.floor(mesesCompletos(adm,sai)/12);
+  const diasAviso = tipo==="sjc"||tipo==="aco" ? Math.min(90,30+3*anos) : 0;
+  const ref = tipo==="sjc" ? maisDias(sai,diasAviso) : sai;   // o aviso indenizado conta como tempo de serviço
+  const v={};
+  v.saldo = sal/30*Math.min(30,sai.getUTCDate());
+  v.aviso = tipo==="sjc" ? sal/30*diasAviso : tipo==="aco" ? sal/30*diasAviso/2 : 0;
+  v.decimo = tipo==="jc" ? 0 : sal/12*meses13(adm,ref);
+  v.feriasProp = tipo==="jc" ? 0 : sal/12*mesesFerias(adm,ref)*4/3;
+  v.feriasVenc = vencidas ? sal*4/3 : 0;
+  const depositos = FGTS_ALIQ*sal*Math.max(1,mesesCompletos(adm,sai));
+  v.multa = tipo==="sjc" ? depositos*0.4 : tipo==="aco" ? depositos*0.2 : 0;
+  v.total = v.saldo+v.aviso+v.decimo+v.feriasProp+v.feriasVenc+v.multa;
+  return Object.assign(v,{diasAviso, m13:meses13(adm,ref), mFer:mesesFerias(adm,ref), prazo:maisMeses(sai,24)}); }
+
+const el = (tag, attrs={}, ...kids) => { const e=document.createElement(tag);
+  for(const k in attrs){ if(k==="class")e.className=attrs[k]; else if(k.startsWith("on"))e.addEventListener(k.slice(2),attrs[k]); else e.setAttribute(k,attrs[k]); }
+  kids.flat().forEach(c=>e.append(c)); return e; };
+const $=id=>document.getElementById(id);
+const res=$("res"), avisoEx=$("aviso-ex"), dinheiro=[$("c-sal"),$("c-rec")];
+let editado=false, nomeDigitado="";
+const TIPOS={sjc:"Demissão sem justa causa",ped:"Pedido de demissão",aco:"Acordo com a empresa",jc:"Demissão por justa causa"};
+
+document.querySelectorAll("#form input, #form select").forEach(c=>{
+  const ev = c.type==="checkbox"||c.tagName==="SELECT"||c.type==="date" ? "change" : "input";
+  c.addEventListener(ev,()=>{ if(dinheiro.includes(c)) c.value=mascara(c.value,false); editado=true; avisoEx.hidden=true; atualizar(); }); });
+dinheiro.forEach(c=>{ c.addEventListener("focus",()=>{ if(!editado) c.select(); }); c.addEventListener("blur",()=>{ c.value=mascara(c.value,true); }); });
+
+function atualizar(){
+  const sal=num($("c-sal").value), adm=data($("c-adm").value), sai=data($("c-sai").value), tipo=$("c-tipo").value, venc=$("c-venc").checked;
+  let rec=num($("c-rec").value); if(isNaN(rec)) rec=null;
+  let m="";
+  if(!(sal>=100)) m="Digite o último salário para ver a estimativa."; else if(!adm) m="Informe a data de admissão."; else if(!sai) m="Informe o último dia trabalhado."; else if(sai<=adm) m="Confira as datas. A saída precisa ser depois da admissão."; else if((sai-adm)/DIA>60*366) m="Confira as datas. O período está longo demais.";
+  res.replaceChildren();
+  if(m){ res.append(el("p",{class:"hint"},m)); return; }
+  mostrar(sal,adm,sai,tipo,venc,rec); }
+
+function mostrar(sal,adm,sai,tipo,venc,rec){ const r=calcular(sal,adm,sai,tipo,venc);
+  const falta = rec!==null ? r.total-rec : null;
+  const extras=[...document.querySelectorAll(".extra:checked")].map(x=>x.value);
+  if(falta!==null && falta>0.5){
+    res.append(el("div",{class:"hero"}, el("small",{},editado?"Pode estar faltando":"Exemplo: pode estar faltando"), el("span",{class:"total"},brl(falta)),
+      el("span",{},`A estimativa das suas verbas é de ${brl(r.total)}, e você informou ter recebido ${brl(rec)}.`)));
+  } else if(falta!==null){
+    res.append(el("div",{class:"hero"}, el("small",{},"Resultado"), el("strong",{},"O valor recebido está de acordo com esta estimativa"), el("span",{},`A estimativa das suas verbas é de ${brl(r.total)}. Outros direitos, como horas extras, não entram nesta conta.`)));
+  } else {
+    res.append(el("div",{class:"hero"}, el("small",{},editado?"Estimativa das verbas da rescisão":"Exemplo de estimativa"), el("span",{class:"total"},brl(r.total)), el("span",{},"É o valor bruto estimado para o seu tipo de desligamento.")));
+  }
+  const linhas=el("dl",{class:"linhas"});
+  const linha=(a,b)=>{ if(b>0.005) linhas.append(el("div",{}, el("dt",{},a), el("dd",{},brl(b)))); };
+  linha(`Saldo de salário (${Math.min(30,sai.getUTCDate())} dias)`, r.saldo);
+  linha(`Aviso prévio indenizado (${tipo==="aco"?"metade de ":""}${r.diasAviso} dias)`, r.aviso);
+  linha(`13º salário proporcional (${r.m13}/12)`, r.decimo);
+  linha(`Férias proporcionais com um terço (${r.mFer}/12)`, r.feriasProp);
+  linha("Férias vencidas com um terço", r.feriasVenc);
+  linha(`Multa de ${tipo==="aco"?"20":"40"}% do FGTS, estimada pelo último salário`, r.multa);
+  res.append(el("h3",{},"De onde vem a estimativa"), linhas);
+  const hoje=new Date(), vencido=hoje>r.prazo;
+  res.append(el("div",{class:"urg "+(vencido?"crit":"warn")}, el("b",{},vencido?"O prazo para reclamar pode ter terminado":`Você tem até ${dmy(r.prazo)} para reclamar na Justiça`),
+    el("span",{},vencido?"O prazo é de dois anos depois do fim do contrato. Há exceções, e vale confirmar o seu caso.":"O prazo é de dois anos depois do fim do contrato. Depois disso, o direito de cobrar se perde.")));
+  if(extras.length) res.append(el("p",{class:"hint"},"Você marcou: "+extras.join("; ").toLowerCase()+". Esses pontos não entram nesta conta e podem aumentar o valor devido."));
+  if(!editado){
+    res.append(el("p",{class:"hint"},"Estes números são de um contrato de exemplo. Preencha os campos acima com os seus dados para ver a sua estimativa."));
+  } else if((falta===null?r.total:Math.max(falta,0))>=MIN_BOTAO){
+    const nome=el("input",{type:"text",id:"c-nome",placeholder:"Seu nome",autocomplete:"name","aria-label":"Seu nome",value:nomeDigitado});
+    const link=el("a",{class:"btn zap"},"Clique e saiba mais");
+    const monta=()=>{ const nm=nome.value.trim(); nomeDigitado=nome.value;
+      link.href=`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Calculadora de Rescisão Trabalhista\n${nm?`Nome: ${nm}\n`:""}Salário: ${brl(sal)}\nAdmissão: ${dmy(adm)}\nSaída: ${dmy(sai)}\nDesligamento: ${TIPOS[tipo]}\nEstimativa das verbas: ${brl(r.total)}${rec!==null?`\nRecebido: ${brl(rec)}\nDiferença: ${brl(falta)}`:""}${extras.length?`\nTambém relatou: ${extras.join("; ")}`:""}`)}`; };
+    nome.addEventListener("input",monta); monta();
+    res.append(el("h3",{},"Quer conferir a sua rescisão com um advogado?"), el("p",{},"Um advogado do escritório confere o termo de rescisão e os outros direitos do seu contrato. Seus dados já vão prontos na mensagem."), nome, link);
+  }
+  res.append(
+    el("h3",{},"As regras que a conta usa"),
+    el("ul",{class:"direitos"},
+      el("li",{}, el("span",{class:"tick","aria-hidden":"true"},"✓"), el("div",{}, el("b",{},"Aviso prévio de 30 dias, mais 3 por ano trabalhado"), "Vale na demissão sem justa causa, até o limite de 90 dias. O período do aviso conta para o 13º e para as férias.", el("span",{class:"base"},"CLT, art. 487, e Lei 12.506/2011"))),
+      el("li",{}, el("span",{class:"tick","aria-hidden":"true"},"✓"), el("div",{}, el("b",{},"13º e férias proporcionais aos meses trabalhados"), "Cada mês com 15 dias ou mais de trabalho conta por inteiro. As férias vêm com o acréscimo de um terço.", el("span",{class:"base"},"Lei 4.090/62 e Constituição, art. 7º, XVII"))),
+      el("li",{}, el("span",{class:"tick","aria-hidden":"true"},"✓"), el("div",{}, el("b",{},"Multa de 40% sobre o FGTS"), "É devida na demissão sem justa causa. No acordo entre as partes, a multa é de 20% e o aviso é pago pela metade.", el("span",{class:"base"},"Lei 8.036/90, art. 18, e CLT, art. 484-A")))),
+    el("p",{class:"aviso"},"Esta é uma estimativa simples, não o cálculo oficial. Ela usa o último salário para todo o período e não considera adicionais, comissões, faltas nem os descontos legais, que podem mudar o resultado.")); }
+
+atualizar();
+</script>
+</body>
+</html>
