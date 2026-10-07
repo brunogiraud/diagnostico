@@ -94,7 +94,7 @@ ul,ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
   <main id="app" class="panel">
     <p class="exemplo" id="aviso-ex">Exemplo preenchido. Troque pelos números do seu contrato.</p>
     <form id="form" novalidate class="wrap" style="gap:14px">
-      <label class="campo">Valor do contrato (R$)<input type="text" inputmode="decimal" id="c-valor" value="1.500.000"></label>
+      <label class="campo">Valor do contrato (R$) <small>Com pontos e vírgula, como 1.500.000,00.</small><input type="text" inputmode="decimal" id="c-valor" value="1.500.000,00"></label>
       <label class="campo">Taxa de juros do contrato (% ao ano)<input type="text" inputmode="decimal" id="c-taxa" value="18,5"></label>
       <label class="campo">Há quantos anos o contrato foi assinado?<input type="text" inputmode="decimal" id="c-anos" value="3"></label>
       <label class="campo">Meses em atraso <small>Se está em dia, deixe 0.</small><input type="text" inputmode="numeric" id="c-meses" value="6"></label>
@@ -102,7 +102,7 @@ ul,ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
     </form>
     <div id="res" class="wrap" style="gap:16px" aria-live="polite"></div>
   </main>
-  <p class="foot">Estimativa informativa, feita com os números que você digitou e com os parâmetros do Decreto-Lei 167/67 e da jurisprudência do STJ. Não é laudo nem promessa de resultado. O valor real depende da leitura do contrato e do extrato por um advogado. Nada do que você digita é armazenado. c2</p>
+  <p class="foot">Estimativa informativa, feita com os números que você digitou e com os parâmetros do Decreto-Lei 167/67 e da jurisprudência do STJ. Não é laudo nem promessa de resultado. O valor real depende da leitura do contrato e do extrato por um advogado. Nada do que você digita é armazenado. c3</p>
 </div>
 <script>
 const WHATSAPP = "5543984075030";
@@ -115,7 +115,13 @@ const MIN_BOTAO = 300000;   // valor de contrato a partir do qual aparece o bot�
 function num(s){ s=String(s).trim().replace(/[R$\s%]/g,""); if(!s) return NaN;
   if(s.includes(",")) s=s.replace(/\./g,"").replace(",","."); else if(/^\d{1,3}(\.\d{3})+$/.test(s)) s=s.replace(/\./g,"");
   return Number(s); }
-const brl = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0});
+const brl = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:2,maximumFractionDigits:2});
+// Formata o valor digitado como dinheiro: pontos nos milhares e vírgula nos centavos.
+function mascara(t, completar){ t=String(t).replace(/[^\d,]/g,""); const i=t.indexOf(",");
+  let int=(i<0?t:t.slice(0,i)).replace(/^0+(?=\d)/,""), dec=i<0?null:t.slice(i+1).replace(/,/g,"").slice(0,2);
+  int=int.replace(/\B(?=(\d{3})+(?!\d))/g,".");
+  if(completar){ if(!int) return ""; return int+","+((dec||"")+"00").slice(0,2); }
+  return dec===null ? int : (int||"0")+","+dec; }
 const pct = v => v.toLocaleString("pt-BR",{maximumFractionDigits:2})+"%";
 
 function calcular(P, taxa, anos, meses, mora){
@@ -137,8 +143,9 @@ const res=document.getElementById("res"), avisoEx=document.getElementById("aviso
 const campos=["c-valor","c-taxa","c-anos","c-meses","c-mora"].map(id=>document.getElementById(id));
 let editado=false, nomeDigitado="";
 
-campos.forEach(c=>{ c.addEventListener("focus",()=>{ if(!editado) c.select(); });
-  c.addEventListener("input",()=>{ editado=true; avisoEx.hidden=true; atualizar(); }); });
+campos.forEach((c,k)=>{ c.addEventListener("focus",()=>{ if(!editado) c.select(); });
+  c.addEventListener("input",()=>{ if(k===0) c.value=mascara(c.value,false); editado=true; avisoEx.hidden=true; atualizar(); });
+  if(k===0) c.addEventListener("blur",()=>{ c.value=mascara(c.value,true); }); });
 
 function atualizar(){
   const P=num(campos[0].value), taxa=num(campos[1].value), anos=num(campos[2].value);
