@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Um diagnóstico online com o nome do seu escritório, que filtra o contato antes de ele chegar ao seu WhatsApp.">
+<title>Diagnóstico Online para Escritórios</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: página de apresentação em coluna única; a demonstração ao vivo dentro de uma moldura de celular é a peça central */
+:root{
+  --bg:#eef2ec; --surface:#ffffff; --ink:#14241a; --muted:#56655b; --line:#cfd8d0;
+  --accent:#1c6a3c; --accent-ink:#ffffff; --soft:#dfeadf; --frame:#14241a;
+  --display:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1712; --surface:#18231c; --ink:#e8efe9; --muted:#9daea2; --line:#2f3f34;
+  --accent:#5fc286; --accent-ink:#08130c; --soft:#203227; --frame:#05090a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1712; --surface:#18231c; --ink:#e8efe9; --muted:#9daea2; --line:#2f3f34;
+  --accent:#5fc286; --accent-ink:#08130c; --soft:#203227; --frame:#05090a; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;padding-inline:16px;padding-block:28px 48px}
+.col{max-width:680px;margin-inline:auto;display:flex;flex-direction:column;gap:44px}
+section,header{display:flex;flex-direction:column;gap:14px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(32px,8.5vw,52px);line-height:1.02;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(23px,5.5vw,30px);line-height:1.12;margin:0;text-wrap:balance}
+p{margin:0;max-width:62ch}
+.lead{font-size:19px;color:var(--muted)}
+.btn{align-self:flex-start;font-weight:600;font-size:18px;border-radius:6px;padding:15px 22px;background:var(--accent);color:var(--accent-ink);text-decoration:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.abas{display:flex;gap:8px;flex-wrap:wrap}
+.aba{font:inherit;font-size:15px;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:99px;padding:8px 14px;cursor:pointer}
+.aba[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.fone{align-self:center;width:100%;max-width:380px;background:var(--frame);border-radius:28px;padding:10px}
+.fone iframe{display:block;width:100%;height:600px;border:0;border-radius:20px;background:#eef2ec}
+.nota{font-size:14px;color:var(--muted);text-align:center;align-self:center}
+ol.passos{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;counter-reset:p}
+ol.passos li{counter-increment:p;display:grid;grid-template-columns:40px 1fr;gap:12px;padding:16px 0;border-top:1px solid var(--line)}
+ol.passos li:first-child{border-top:0;padding-top:0}
+ol.passos li::before{content:counter(p);font-family:var(--display);font-weight:700;font-size:26px;line-height:1;color:var(--accent)}
+ol.passos b,.lista b{display:block;font-family:var(--display);font-size:18px;line-height:1.2}
+ul.lista{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px 28px}
+ul.lista li{min-width:0}
+ul.lista span,ol.passos span{color:var(--muted)}
+.limites{border-left:3px solid var(--line);padding-left:14px;color:var(--muted)}
+.fim{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:24px}
+footer{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="col">
+  <header>
+    <h1>Seu anúncio traz contato que não vira cliente?</h1>
+    <p class="lead">Um diagnóstico online com o nome do seu escritório. Ele informa o visitante, filtra pelo critério que você definir e só leva ao seu WhatsApp quem tem o perfil que você atende.</p>
+    <a class="btn" id="cta1" href="#">Quero uma demonstração</a>
+  </header>
+
+  <section aria-labelledby="t-demo">
+    <h2 id="t-demo">Teste agora, do jeito que o seu cliente veria</h2>
+    <p>Estas páginas estão no ar e funcionam de verdade. Responda como se fosse um cliente.</p>
+    <div class="abas" role="group" aria-label="Escolha a demonstração">
+      <button class="aba" type="button" aria-pressed="true" data-src="../rural/">Dívida rural</button>
+      <button class="aba" type="button" aria-pressed="false" data-src="../transportes/">Transportadoras</button>
+      <button class="aba" type="button" aria-pressed="false" data-src="../calculadora/">Calculadora de juros</button>
+      <button class="aba" type="button" aria-pressed="false" data-src="../caminhao/">Financiamento de caminhão</button>
+    </div>
+    <div class="fone"><iframe id="demo" src="../rural/" title="Demonstração do diagnóstico" loading="lazy"></iframe></div>
+    <p class="nota">Demonstração ao vivo. Os exemplos são de direito bancário, e o modelo se adapta à sua área.</p>
+  </section>
+
+  <section aria-labelledby="t-como">
+    <h2 id="t-como">Como funciona</h2>
+    <ol class="passos">
+      <li><div><b>O visitante responde poucas perguntas</b><span>Sete toques na tela, sem cadastro e sem instalar nada. Ou digita os números do contrato, no caso da calculadora.</span></div></li>
+      <li><div><b>Ele recebe uma orientação na hora</b><span>A página mostra os direitos que se aplicam ao caso, com a base legal, a urgência e o próximo passo. Conteúdo informativo, como a OAB exige.</span></div></li>
+      <li><div><b>Só o perfil certo chega até você</b><span>Quem passa do corte que você definiu vê o botão do WhatsApp. A mensagem já chega com a ficha do caso preenchida.</span></div></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="t-inclui">
+    <h2 id="t-inclui">O que o seu escritório recebe</h2>
+    <ul class="lista">
+      <li><b>Página com a sua marca</b><span>Nome do escritório, cores e o seu número de WhatsApp.</span></li>
+      <li><b>Perguntas da sua área</b><span>Bancário, previdenciário, trabalhista, consumidor ou outra. As perguntas e o resultado são montados para o seu público.</span></li>
+      <li><b>O seu critério de corte</b><span>Valor da causa, tipo de caso ou região. Você decide quem vê o botão de contato.</span></li>
+      <li><b>Link pronto para divulgar</b><span>Serve para anúncio, bio do Instagram, grupos e parceiros. Funciona em qualquer celular.</span></li>
+      <li><b>Ajustes sem depender de programador</b><span>Você pede a mudança em linguagem comum e ela entra no ar.</span></li>
+      <li><b>Nenhum dado guardado</b><span>As respostas ficam no aparelho do visitante e só chegam a você quando ele envia.</span></li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="t-limites">
+    <h2 id="t-limites">O que ele não faz</h2>
+    <p class="limites">Não substitui a consulta nem promete resultado ao visitante. Os textos jurídicos de cada página são revisados e aprovados pelo escritório contratante, que responde pelo conteúdo. O envio da ficha depende de o visitante tocar em enviar no WhatsApp.</p>
+  </section>
+
+  <section class="fim" aria-labelledby="t-fim">
+    <h2 id="t-fim">Quer ver como ficaria para o seu escritório?</h2>
+    <p>Diga a sua área de atuação e o perfil de cliente que você quer receber. Você vê uma versão de demonstração antes de decidir.</p>
+    <a class="btn" id="cta2" href="#">Quero uma demonstração</a>
+  </section>
+
+  <footer>Ferramenta de triagem e informação para escritórios de advocacia. O conteúdo jurídico exibido ao público é de responsabilidade do escritório contratante.</footer>
+</div>
+<script>
+const WHATSAPP = "5543984075030";
+const href = "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent("Olá, vi a página do Diagnóstico Online para Escritórios e quero uma demonstração.\nMinha área de atuação: ");
+document.getElementById("cta1").href = href; document.getElementById("cta2").href = href;
+const demo = document.getElementById("demo");
+document.querySelectorAll(".aba").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".aba").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+  demo.src = b.dataset.src; }));
+</script>
+</body>
+</html>
