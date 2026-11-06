@@ -370,7 +370,7 @@ function mostrar(d){
     res.append(el("p",{class:"hint"},"Estes números são de um contrato de exemplo. Preencha os campos acima com os seus dados para ver a sua conta."));
   } else {
     const nome=el("input",{type:"text",id:"c-nome",placeholder:"Seu nome",autocomplete:"name","aria-label":"Seu nome",value:nomeDigitado});
-    const link=el("a",{class:"btn zap",target:"_blank",rel:"noopener"},"Falar com um advogado no WhatsApp");
+    const link=el("a",{class:"btn zap",target:"_blank",rel:"noopener"},"Falar com um especialista no WhatsApp");
     const monta=()=>{ const nm=nome.value.trim(); nomeDigitado=nome.value;
       const t=["Calculadora de Rescisão Trabalhista", nm?`Nome: ${nm}`:null,
         `Salário: ${brl(d.sal)}${d.med?` + médias ${brl(d.med)}`:""}`, `Admissão: ${dmy(d.adm)}`, `Saída: ${dmy(d.sai)}`,
@@ -380,8 +380,8 @@ function mostrar(d){
         ...extras.map(x=>`${x.k}${x.v?`: ${brl(x.v)}`:""}`), `Prazo: ${dmy(r.prazo)}`].filter(Boolean).join("\n");
       link.href=`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(t)}`; };
     nome.addEventListener("input",monta); monta();
-    res.append(el("h3",{},"Quer que um advogado confira a sua rescisão?"),
-      el("p",{},"Análise sem custo. Um advogado do escritório confere o termo de rescisão, o FGTS e os outros direitos do seu contrato. Seus dados já vão prontos na mensagem."),
+    res.append(el("h3",{},"Quer que um especialista confira a sua rescisão?"),
+      el("p",{},"Análise sem custo. Um especialista do escritório confere o termo de rescisão, o FGTS e os outros direitos do seu contrato. Seus dados já vão prontos na mensagem."),
       el("div",{class:"acoes"}, nome, link)); }
 
   const share=el("button",{type:"button",class:"btn ghost"},"Enviar a calculadora para alguém");
