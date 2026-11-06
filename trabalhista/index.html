@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Calcule sua rescisão grátis em 1 minuto: valor líquido, FGTS, multa de 40%, férias, 13º e horas extras.">
+<meta name="description" content="Calcule sua rescisão em 1 minuto: valor líquido, FGTS, multa de 40%, férias, 13º e horas extras.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://brunogiraud.github.io/diagnostico/trabalhista/">
 <meta property="og:title" content="A empresa pagou tudo o que você tinha direito?">
-<meta property="og:description" content="Calcule sua rescisão grátis em 1 minuto: valor líquido, FGTS, multa de 40%, férias, 13º e horas extras.">
+<meta property="og:description" content="Calcule sua rescisão em 1 minuto: valor líquido, FGTS, multa de 40%, férias, 13º e horas extras.">
 <meta property="og:image" content="https://brunogiraud.github.io/diagnostico/trabalhista/capa.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -172,7 +172,7 @@ body.com-fixo{padding-bottom:110px}
       <h1>A empresa pagou <em>tudo</em> o que você tinha direito?</h1>
       <p>Responda algumas perguntas e descubra quanto deveria ter recebido na rescisão, quanto tem de FGTS e quais direitos podem ter ficado para trás.</p>
       <button class="btn" id="comecar" type="button">Calcular minha rescisão</button>
-      <ul class="selos"><li>Grátis</li><li>Sem cadastro</li><li>Resultado na hora</li></ul>
+      <ul class="selos"><li>Sem cadastro</li><li>Resultado na hora</li></ul>
       <span class="tempo">Leva cerca de 1 minuto · Regras da CLT e tabelas de 2026</span>
     </header>
     <div class="conf" aria-label="O que a calculadora confere">
@@ -181,7 +181,7 @@ body.com-fixo{padding-bottom:110px}
       <div><b>Extras</b><span>Horas extras e salário por fora</span></div>
     </div>
     <div class="faq">
-      <details><summary>Preciso informar meu nome ou CPF?</summary><p>Não. A conta é feita no seu celular e nada do que você digita é armazenado. Só se quiser falar com um especialista você envia os dados pelo WhatsApp.</p></details>
+      <details><summary>Preciso informar meu nome ou CPF?</summary><p>Não. A conta é feita no seu celular e nada do que você digita é armazenado. Só se quiser falar com o escritório você envia os dados pelo WhatsApp.</p></details>
       <details><summary>Até quando posso cobrar a empresa?</summary><p>Até dois anos depois da saída, cobrando os últimos cinco anos de contrato. A calculadora mostra a data limite do seu caso.</p></details>
       <details><summary>A conta é exata?</summary><p>É uma estimativa com as regras da CLT e as tabelas de INSS e imposto de renda de 2026. O valor exato depende dos documentos do seu contrato.</p></details>
     </div>
@@ -465,7 +465,7 @@ function classificar(aberto, r, extras){ const meses=(r.prazo-hojeUTC())/DIA/30;
 
 function resultado(){
   const d=dados(), r=calcular(d), extras=calcularExtras(d,r);
-  const SEMNUM={he:["Horas extras sem pagamento","Informe as horas por semana para estimar. Um especialista calcula com os seus cartões de ponto."],sr:["Período sem registro em carteira","Informe os meses para estimar. O tempo também conta para a aposentadoria."],pf:["Salário pago por fora","Informe o valor por mês para estimar os reflexos em 13º, férias e FGTS."]};
+  const SEMNUM={he:["Horas extras sem pagamento","Informe as horas por semana para estimar. O valor exato depende dos cartões de ponto."],sr:["Período sem registro em carteira","Informe os meses para estimar. O tempo também conta para a aposentadoria."],pf:["Salário pago por fora","Informe o valor por mês para estimar os reflexos em 13º, férias e FGTS."]};
   for(const k in SEMNUM) if(st.x[k] && !(d[k]>0)) extras.push({k:SEMNUM[k][0],v:null,txt:SEMNUM[k][1]});
   const falta = d.rec!==null ? r.liquido-d.rec : null;
   const somaExtras = extras.reduce((s,x)=>s+(x.v&&!x.k.startsWith("Acidente")?x.v:0),0);
@@ -476,7 +476,7 @@ function resultado(){
   if(aberto>0.5){
     const partes=[]; if(falta!==null&&falta>0.5) partes.push(`${brl(falta)} na rescisão`); if(somaExtras>0) partes.push(`${brl(somaExtras)} em outros direitos`);
     totalNode=el("span",{class:"total"},brl(0));
-    tela.append(el("div",{class:"hero"}, el("small",{},"Você pode ter a receber"), totalNode, el("span",{class:"partes"},partes.join(" + ")),
+    tela.append(el("div",{class:"hero"}, el("small",{},"Diferença estimada"), totalNode, el("span",{class:"partes"},partes.join(" + ")),
       el("span",{},falta!==null&&falta>0.5?`A rescisão líquida deveria ser de cerca de ${brl(r.liquido)}, e você recebeu ${brl(d.rec)}.`:"Estimativa feita com os dados que você informou.")));
   } else if(falta!==null){
     tela.append(el("div",{class:"hero"}, el("small",{},"Resultado"), el("strong",{},"O valor recebido está de acordo com a estimativa"),
@@ -498,29 +498,29 @@ function resultado(){
   const vencido=hojeUTC()>r.prazo, meses=Math.floor((r.prazo-hojeUTC())/DIA/30.44);
   tela.append(el("div",{class:"urg"+(vencido||meses<6?" crit":"")},
     el("b",{},vencido?"O prazo para cobrar pode ter terminado":`Você tem até ${dmy(r.prazo)} para cobrar`),
-    el("span",{},vencido?"O prazo é de dois anos depois da saída. Há exceções, e vale confirmar o seu caso.":`Faltam cerca de ${meses} ${meses===1?"mês":"meses"}. Depois disso, o direito se perde. Quanto antes, mais meses entram na conta.`)));
+    el("span",{},vencido?"O prazo é de dois anos depois da saída. Há exceções, e vale confirmar o seu caso.":`Faltam cerca de ${meses} ${meses===1?"mês":"meses"}. Depois dessa data, não é mais possível cobrar na Justiça.`)));
 
   // Contato
   const nome=el("input",{type:"text",placeholder:"Seu nome",autocomplete:"name","aria-label":"Seu nome",value:st.nome});
-  const link=zapBtn("Falar com um especialista");
+  const link=zapBtn("Falar com o escritório");
   const classe=classificar(aberto,r,extras);
   const monta=()=>{ st.nome=nome.value; const nm=nome.value.trim();
     const origem=[UTM.utm_source,UTM.utm_campaign,UTM.utm_content].filter(Boolean).join(" / ");
-    const t=["Olá! Fiz a Calculadora de Rescisão e quero que um especialista confira o meu caso.","",
+    const t=["Olá! Fiz a Calculadora de Rescisão e gostaria que o escritório conferisse o meu caso.","",
       nm?`Nome: ${nm}`:null, `Saída: ${TIPOS[d.tipo]}`, `Salário: ${brl(d.sal)}${d.med?` + médias ${brl(d.med)}`:""}`, `Período: ${dmy(d.adm)} a ${dmy(d.sai)}`,
       `Rescisão líquida estimada: ${brl(r.liquido)}`, d.prazo==="naopagou"?"Ainda não recebeu":d.rec!==null?`Recebido: ${brl(d.rec)}`:"Não sabe quanto recebeu",
       falta!==null&&falta>0.5?`Diferença: ${brl(falta)}`:null, r.multa477>0?"Pagamento fora do prazo":null,
       r.saque>0?`FGTS para sacar: ${brl(r.saque)}`:null, ...extras.map(x=>`${x.k}${x.v?`: ${brl(x.v)}`:""}`),
-      aberto>0.5?`Total que pode ter a receber: ${brl(aberto)}`:null, `Prazo: ${dmy(r.prazo)}`, "", `Ref.: ${classe}${origem?` · ${origem}`:""}`].filter(x=>x!==null).join("\n");
+      aberto>0.5?`Diferença estimada total: ${brl(aberto)}`:null, `Prazo: ${dmy(r.prazo)}`, "", `Ref.: ${classe}${origem?` · ${origem}`:""}`].filter(x=>x!==null).join("\n");
     const href=`https://wa.me/${atendente}?text=${encodeURIComponent(t)}`; link.href=href; $("fixo-link").href=href; };
   nome.addEventListener("input",monta);
   const clicou=()=>medir("Lead",{content_name:"calculadora-rescisao",value:Math.round(aberto),currency:"BRL",ref:classe});
   link.addEventListener("click",clicou);
-  if(!$("fixo-link").dataset.ok){ $("fixo-link").innerHTML=ZAP; $("fixo-link").append("Falar com um especialista"); $("fixo-link").addEventListener("click",clicou); $("fixo-link").dataset.ok="1"; }
+  if(!$("fixo-link").dataset.ok){ $("fixo-link").innerHTML=ZAP; $("fixo-link").append("Falar com o escritório"); $("fixo-link").addEventListener("click",clicou); $("fixo-link").dataset.ok="1"; }
   monta();
   tela.append(el("div",{class:"contato"},
-    el("h3",{},aberto>0.5?"Quer receber o que é seu?":"Quer que um especialista confira o seu caso?"),
-    el("ul",{}, el("li",{},"Análise sem custo do termo de rescisão e do FGTS"), el("li",{},"Conferência de horas extras e outros direitos"), el("li",{},"Seus dados já vão prontos na mensagem")),
+    el("h3",{},"Quer que o escritório confira o seu caso?"),
+    el("ul",{}, el("li",{},"Conferência do termo de rescisão e do FGTS"), el("li",{},"Conferência de horas extras e outros direitos"), el("li",{},"Seus dados já vão prontos na mensagem")),
     nome, link));
 
   // Detalhes
@@ -553,7 +553,7 @@ function resultado(){
   const refazer=el("button",{class:"btn ghost",type:"button"},"Alterar respostas"); refazer.addEventListener("click",()=>{ PRE.tipo=PRE.datas=false; ir(0); });
   const share=el("button",{class:"btn ghost",type:"button"},"Enviar para alguém");
   share.addEventListener("click",async()=>{ const url=location.origin+location.pathname;
-    try{ if(navigator.share){ await navigator.share({title:"A empresa pagou tudo o que você tinha direito?",text:"Calculadora gratuita de rescisão:",url}); return; } }catch(e){ return; }
+    try{ if(navigator.share){ await navigator.share({title:"A empresa pagou tudo o que você tinha direito?",text:"Calculadora de rescisão:",url}); return; } }catch(e){ return; }
     try{ await navigator.clipboard.writeText(url); share.textContent="Link copiado"; }catch(e){ location.href=`https://wa.me/?text=${encodeURIComponent(url)}`; } });
   tela.append(el("div",{class:"acoes2"}, refazer, share));
 
