@@ -6,8 +6,8 @@
 <meta name="description" content="Calcule sua rescisão em 1 minuto: valor líquido, FGTS, multa de 40%, férias, 13º e horas extras.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://brunogiraud.github.io/diagnostico/trabalhista/">
-<meta property="og:title" content="A empresa pagou tudo o que você tinha direito?">
-<meta property="og:description" content="Calcule sua rescisão em 1 minuto: valor líquido, FGTS, multa de 40%, férias, 13º e horas extras.">
+<meta property="og:title" content="Seu trabalho tem valor. Seus direitos também.">
+<meta property="og:description" content="Confira em 1 minuto se você recebeu tudo na rescisão: aviso prévio, férias, 13º, FGTS e multa de 40%.">
 <meta property="og:image" content="https://brunogiraud.github.io/diagnostico/trabalhista/capa.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -66,6 +66,21 @@ p{margin:0}
 .conf b{font-family:var(--display);font-size:16px;line-height:1.15}
 .conf span{font-size:12.5px;color:var(--muted);line-height:1.3}
 @media (max-width:380px){.conf{grid-template-columns:1fr}}
+.lei{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.lei h2{font-size:22px}
+.lei-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:380px){.lei-grid{grid-template-columns:1fr}}
+.lei-grid div{background:var(--bg);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:4px;border-left:4px solid var(--accent)}
+.lei-grid .n{font-family:var(--display);font-weight:800;font-size:13px;color:var(--accent);letter-spacing:.08em}
+.lei-grid b{font-family:var(--display);font-size:18px;line-height:1.1}
+.lei-grid span:not(.n){font-size:14px;color:var(--muted);line-height:1.35}
+.frase{margin:0;background:var(--deep);color:#fff;border-radius:20px;padding:24px 22px;font-family:var(--display);font-weight:800;font-size:clamp(22px,6vw,28px);line-height:1.12;letter-spacing:-.01em;position:relative;overflow:hidden;isolation:isolate}
+.frase:before{content:"“";position:absolute;right:12px;top:-28px;font-size:160px;color:var(--glow);opacity:.18;z-index:-1;font-family:Georgia,serif}
+.frase span{display:block;font-family:var(--body);font-weight:500;font-size:15px;color:#cfe3d5;margin-top:10px;letter-spacing:0}
+.alerta{background:var(--warn-bg);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.alerta b{font-family:var(--display);color:var(--warn);font-size:17px}
+.alerta span{font-size:15px}
+.topo h1{font-size:clamp(34px,9.5vw,48px)}
 .faq details{border-top:1px solid var(--line);padding:12px 2px}
 .faq summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:10px}
 .faq summary:after{content:"+";color:var(--accent);font-weight:700}
@@ -169,17 +184,22 @@ body.com-fixo{padding-bottom:110px}
   <section id="abertura" class="wrap">
     <header class="topo">
       <span class="marca">Carvalho Advocacia · Direito do Trabalho</span>
-      <h1>A empresa pagou <em>tudo</em> o que você tinha direito?</h1>
-      <p>Responda algumas perguntas e descubra quanto deveria ter recebido na rescisão, quanto tem de FGTS e quais direitos podem ter ficado para trás.</p>
-      <button class="btn" id="comecar" type="button">Calcular minha rescisão</button>
-      <ul class="selos"><li>Sem cadastro</li><li>Resultado na hora</li></ul>
-      <span class="tempo">Leva cerca de 1 minuto · Regras da CLT e tabelas de 2026</span>
+      <h1>Seu trabalho tem valor.<br><em>Seus direitos também.</em></h1>
+      <p>Cada dia que você trabalhou conta. A lei garante aviso prévio, férias, 13º e FGTS a quem foi desligado. Confira em 1 minuto se você recebeu tudo o que é seu.</p>
+      <button class="btn" id="comecar" type="button">Conferir meus direitos</button>
+      <ul class="selos"><li>Sem cadastro</li><li>Resultado na hora</li><li>Regras de 2026</li></ul>
     </header>
-    <div class="conf" aria-label="O que a calculadora confere">
-      <div><b>Rescisão</b><span>Aviso, férias, 13º e descontos</span></div>
-      <div><b>FGTS</b><span>Saldo e multa de 40%</span></div>
-      <div><b>Extras</b><span>Horas extras e salário por fora</span></div>
-    </div>
+    <section class="lei" aria-labelledby="lei-t">
+      <h2 id="lei-t">O que a lei garante a você</h2>
+      <div class="lei-grid">
+        <div><span class="n">1</span><b>Aviso prévio</b><span>30 dias, mais 3 por ano trabalhado, até 90 dias.</span></div>
+        <div><span class="n">2</span><b>Férias + 1/3</b><span>As proporcionais e as vencidas. Vencidas há mais tempo são pagas em dobro.</span></div>
+        <div><span class="n">3</span><b>13º salário</b><span>Proporcional aos meses trabalhados no ano.</span></div>
+        <div><span class="n">4</span><b>FGTS + 40%</b><span>Saque do saldo e multa de 40% na demissão sem justa causa.</span></div>
+      </div>
+    </section>
+    <blockquote class="frase">O que você conquistou trabalhando é seu por direito.<span>Conferir a rescisão é um direito de todo trabalhador.</span></blockquote>
+    <div class="alerta"><b>Atenção ao prazo</b><span>Depois da saída, você tem 2 anos para cobrar na Justiça o que ficou faltando.</span></div>
     <div class="faq">
       <details><summary>Preciso informar meu nome ou CPF?</summary><p>Não. A conta é feita no seu celular e nada do que você digita é armazenado. Só se quiser falar com o escritório você envia os dados pelo WhatsApp.</p></details>
       <details><summary>Até quando posso cobrar a empresa?</summary><p>Até dois anos depois da saída, cobrando os últimos cinco anos de contrato. A calculadora mostra a data limite do seu caso.</p></details>
