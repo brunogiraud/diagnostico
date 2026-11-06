@@ -60,6 +60,7 @@ p{margin:0}
 .selos{list-style:none;padding:0;margin:0;display:flex;gap:14px;flex-wrap:wrap;justify-content:center;font-size:14px;color:#cfe3d5}
 .selos li:before{content:"✓ ";color:var(--glow);font-weight:700}
 .tempo{font-size:13px;color:#9fc3ab}
+.topo .ola{background:rgba(95,194,134,.16);border:1px solid rgba(95,194,134,.4);color:#e8f6ec;border-radius:12px;padding:10px 14px;font-size:15px;font-weight:600}
 .conf{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .conf div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 10px;text-align:center;display:flex;flex-direction:column;gap:2px}
 .conf b{font-family:var(--display);font-size:16px;line-height:1.15}
@@ -333,14 +334,21 @@ const TIPOS={sjc:"Demissão sem justa causa",ped:"Pedido de demissão",aco:"Acor
 
 const st={ tipo:null, aviso:"ind", sal:NaN, med:0, temMed:false, adm:null, sai:null, venc:null, adi:false, prazo:null, rec:null, he:0, sr:0, pf:0, ac:false, x:{he:false,sr:false,pf:false,ac:false}, nome:"" };
 
+// Pré-preenchimento pelo link (?n=Nome&a=AAAA-MM-DD&s=AAAA-MM-DD&t=sjc)
+const Q=new URLSearchParams(location.search), PRE={tipo:false,datas:false};
+(()=>{ const a=data(Q.get("a")), s=data(Q.get("s")), t=Q.get("t"), n=(Q.get("n")||"").trim();
+  if(t && TIPOS[t]){ st.tipo=t; PRE.tipo=true; }
+  if(a && s && s>a){ st.adm=a; st.sai=s; PRE.datas=true; }
+  if(n) st.nome=n.slice(0,40); })();
+
 const PASSOS=[
-  {id:"tipo", q:"Como o seu contrato terminou?", tipo:"opts", key:"tipo", opts:()=>[
+  {id:"tipo", se:()=>!PRE.tipo, q:"Como o seu contrato terminou?", tipo:"opts", key:"tipo", opts:()=>[
     ["sjc","Fui demitido sem justa causa"],["ped","Pedi demissão"],["aco","Fiz acordo com a empresa"],["jc","Fui demitido por justa causa"],
     ["ind","Saí por falta grave da empresa","Rescisão indireta: salário atrasado, FGTS não depositado, assédio"]]},
   {id:"aviso", se:()=>["sjc","ind","ped"].includes(st.tipo), q:()=>st.tipo==="ped"?"Você cumpriu o aviso prévio?":"Você trabalhou durante o aviso prévio?", tipo:"opts", key:"aviso",
     opts:()=>st.tipo==="ped"?[["trab","Sim, cumpri os 30 dias"],["ind","Não cumpri"]]:[["ind","Não, fui dispensado na hora","O aviso é pago em dinheiro (indenizado)"],["trab","Sim, trabalhei o aviso"]]},
   {id:"sal", q:"Qual era o seu último salário?", h:"O valor da carteira, sem os descontos.", tipo:"sal"},
-  {id:"datas", q:"Quando você trabalhou na empresa?", tipo:"datas"},
+  {id:"datas", se:()=>!PRE.datas, q:"Quando você trabalhou na empresa?", tipo:"datas"},
   {id:"venc", q:"Ficou algum ano sem tirar férias?", h:"Conte só as férias que venceram e você não tirou.", tipo:"opts", key:"venc", opts:()=>[[0,"Não, tirei todas"],[1,"Sim, um ano sem tirar"],[2,"Sim, dois anos ou mais"]]},
   {id:"adi", se:()=>st.sai && st.sai.getUTCMonth()>=10 && st.tipo!=="jc", q:"Já recebeu a primeira parcela do 13º deste ano?", tipo:"opts", key:"adi", opts:()=>[[false,"Não"],[true,"Sim"]]},
   {id:"pago", q:"Você já recebeu o dinheiro da rescisão?", tipo:"opts", key:"prazo", opts:()=>[["sim","Sim, em até 10 dias depois da saída"],["nao","Sim, mas a empresa atrasou"],["naopagou","Ainda não recebi"]]},
@@ -372,6 +380,8 @@ $("voltar").addEventListener("click",()=>history.back());
 window.addEventListener("popstate",e=>{ const i=e.state?.i ?? -1; if(e.state?.r){ abrirResultado(false); return; } ir(i,{empilhar:false,voltar:true}); });
 $("comecar").addEventListener("click",()=>{ medir("ViewContent",{content_name:"calculadora-rescisao"}); ir(0); });
 history.replaceState({i:-1},"");
+if(PRE.datas||st.nome){ const nm=st.nome.split(" ")[0]; const msg=el("p",{class:"ola"}, `${nm?`Olá, ${nm}! `:""}${PRE.datas?"Já deixamos as datas do seu contrato preenchidas. Falta só confirmar o salário e algumas respostas.":""}`);
+  document.querySelector(".topo h1").before(msg); }
 
 function botaoContinuar(ok, fazer, texto="Continuar"){ const b=el("button",{class:"btn",type:"button"},texto); b.disabled=!ok(); b.addEventListener("click",()=>{ if(ok()) fazer(); }); return b; }
 function moeda(valorInicial, aoMudar){ const inp=el("input",{type:"text",inputmode:"decimal",placeholder:"0,00",autocomplete:"off"}); inp.value=valorInicial>0?mascara(String(valorInicial.toFixed(2)).replace(".",","),true):"";
@@ -540,7 +550,7 @@ function resultado(){
   if(extras.length) tela.append(el("h3",{},"Outros direitos que podem existir"),
     el("ul",{class:"extras"}, extras.map(x=>el("li",{}, el("b",{},x.k), x.v?el("span",{class:"v"},(x.k.startsWith("Acidente")?"até ":"")+brl(x.v)):null, el("span",{},x.txt)))));
 
-  const refazer=el("button",{class:"btn ghost",type:"button"},"Alterar respostas"); refazer.addEventListener("click",()=>ir(0));
+  const refazer=el("button",{class:"btn ghost",type:"button"},"Alterar respostas"); refazer.addEventListener("click",()=>{ PRE.tipo=PRE.datas=false; ir(0); });
   const share=el("button",{class:"btn ghost",type:"button"},"Enviar para alguém");
   share.addEventListener("click",async()=>{ const url=location.origin+location.pathname;
     try{ if(navigator.share){ await navigator.share({title:"A empresa pagou tudo o que você tinha direito?",text:"Calculadora gratuita de rescisão:",url}); return; } }catch(e){ return; }
