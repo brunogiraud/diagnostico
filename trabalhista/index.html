@@ -4,11 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Calcule a sua rescisão: valor bruto, descontos de INSS e IR, valor líquido, FGTS e direitos que podem estar faltando.">
-<meta property="og:title" content="Sua rescisão foi paga corretamente?">
-<meta property="og:description" content="Calculadora gratuita: confira em 1 minuto se o valor que você recebeu está completo.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://brunogiraud.github.io/diagnostico/trabalhista/">
+<meta property="og:title" content="A empresa pagou tudo o que você tinha direito?">
+<meta property="og:description" content="Calcule sua rescisão grátis em 1 minuto: valor líquido, FGTS, multa de 40%, férias, 13º e horas extras.">
+<meta property="og:image" content="https://brunogiraud.github.io/diagnostico/trabalhista/capa.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231c6a3c'/%3E%3Ctext x='16' y='22' font-size='15' font-family='Arial' font-weight='700' fill='white' text-anchor='middle'%3ER$%3C/text%3E%3C/svg%3E">
 <meta name="theme-color" content="#1c6a3c">
 <style>body{margin:0}[hidden]{display:none!important}</style>
-<title>Calculadora de Rescisão Trabalhista</title>
+<title>Calculadora de Rescisão 2026 | Confira se recebeu tudo</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600&display=swap">
 <style>
 :root{
@@ -85,16 +92,47 @@ details[open] summary{margin-bottom:10px}
 .aviso{border-left:3px solid var(--line);padding-left:12px;color:var(--muted);font-size:14px}
 .foot{text-align:center;font-size:13px;color:var(--muted)}
 .acoes{display:flex;flex-direction:column;gap:10px}
+.topo{display:flex;flex-direction:column;gap:14px;text-align:center;align-items:center;background:#14241a;color:#fff;border-radius:10px;padding:28px 20px;position:relative;overflow:hidden}
+.topo:before{content:"";position:absolute;right:-120px;top:-120px;width:300px;height:300px;border-radius:50%;background:#1c6a3c;opacity:.5}
+.topo>*{position:relative}
+.topo .marca{color:#8fd4a8}
+.topo h1 em{font-style:normal;color:#5fc286}
+.topo .lead{color:#cfe3d5;font-size:17px}
+.selo{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;border:1px solid #3c6b4c;border-radius:20px;padding:4px 12px;color:#cfe3d5}
+.btn.grande{font-size:18px;padding:16px 26px;background:#5fc286;border-color:#5fc286;color:#08130c;width:100%;max-width:360px}
+.garantias{list-style:none;padding:0;margin:0;display:flex;gap:14px;flex-wrap:wrap;justify-content:center;font-size:14px;color:#cfe3d5}
+.garantias li:before{content:"✓ ";color:#5fc286;font-weight:700}
+.beneficios{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:520px){.beneficios{grid-template-columns:1fr}}
+.beneficios div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:4px}
+.beneficios b{font-family:var(--display);font-size:17px}
+.beneficios span{font-size:14px;color:var(--muted)}
+.passos{counter-reset:p;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.passos li{counter-increment:p;display:flex;gap:10px;align-items:center;font-size:15px}
+.passos li:before{content:counter(p);flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700;font-size:14px}
+.fixo{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(0,0,0,.12);z-index:10}
+.fixo a{display:block;max-width:620px;margin:auto;background:#25d366;border-color:#25d366;color:#08130c;font-size:17px}
+body.com-fixo{padding-bottom:96px}
+.hero .partes{font-size:15px;font-weight:600}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <span class="marca">Advocacia Carvalho</span>
-  <header class="wrap" style="gap:10px;text-align:center">
-    <h1>Sua rescisão foi paga corretamente?</h1>
-    <p class="lead">Preencha os dados do seu contrato. A conta mostra o valor bruto, os descontos, o líquido que deveria cair na sua conta, o FGTS e os direitos que podem estar faltando.</p>
+  <header class="topo">
+    <span class="marca">Advocacia Carvalho · Direito do Trabalho</span>
+    <span class="selo">Calculadora gratuita · Regras 2026</span>
+    <h1>A empresa pagou <em>tudo</em> o que você tinha direito?</h1>
+    <p class="lead">Em 1 minuto, descubra quanto deveria ter recebido na rescisão, quanto tem de FGTS para sacar e quais direitos podem ter ficado para trás.</p>
+    <a class="btn grande" href="#inicio">Calcular minha rescisão</a>
+    <ul class="garantias"><li>Grátis</li><li>Sem cadastro</li><li>Resultado na hora</li></ul>
   </header>
-  <main id="app" class="panel">
+  <section class="beneficios" aria-label="O que a calculadora confere">
+    <div><b>Rescisão completa</b><span>Aviso, férias, 13º, saldo e descontos de INSS e IR</span></div>
+    <div><b>FGTS e multa de 40%</b><span>Quanto você tem para sacar</span></div>
+    <div><b>Direitos esquecidos</b><span>Horas extras, salário por fora e falta de registro</span></div>
+  </section>
+  <ol class="passos" aria-label="Como funciona"><li>Preencha salário, datas e o motivo da saída</li><li>Veja na hora o valor correto e o que pode faltar</li><li>Se quiser, um especialista confere o seu caso sem custo</li></ol>
+  <main id="app" class="panel"><h2 id="inicio" style="scroll-margin-top:16px">Preencha com os dados do seu contrato</h2>
     <p class="exemplo" id="aviso-ex">Exemplo preenchido. Troque pelos dados do seu contrato.</p>
     <form id="form" novalidate class="wrap" style="gap:16px;width:100%">
 
@@ -271,6 +309,8 @@ const el = (tag, attrs={}, ...kids) => { const e=document.createElement(tag);
 const $=id=>document.getElementById(id);
 const res=$("res"), avisoEx=$("aviso-ex");
 let editado=false, nomeDigitado="";
+const fixo=el("div",{class:"fixo",hidden:""}), fixoLink=el("a",{class:"btn",target:"_blank",rel:"noopener"},"Falar com um especialista no WhatsApp");
+fixo.append(fixoLink); document.body.append(fixo);
 const TIPOS={sjc:"Demissão sem justa causa",ped:"Pedido de demissão",aco:"Acordo com a empresa",jc:"Demissão por justa causa",ind:"Rescisão indireta"};
 
 document.querySelectorAll("#form input, #form select").forEach(c=>{
@@ -306,9 +346,12 @@ function mostrar(d){
   const ex = editado?"":"Exemplo: ";
 
   // Veredito
-  if(falta!==null && falta>0.5){
-    res.append(el("div",{class:"hero"}, el("small",{},ex+"Pode estar faltando na sua rescisão"), el("span",{class:"total"},brl(falta)),
-      el("span",{},`O líquido estimado é de ${brl(r.liquido)}, e você informou ter recebido ${brl(d.rec)}.`)));
+  const aberto = Math.max(falta??0,0) + somaExtras;
+  if(aberto>0.5){
+    const partes=[]; if(falta!==null&&falta>0.5) partes.push(`${brl(falta)} na rescisão`); if(somaExtras>0) partes.push(`${brl(somaExtras)} em outros direitos`);
+    res.append(el("div",{class:"hero"}, el("small",{},ex+"Você pode ter a receber"), el("span",{class:"total"},brl(aberto)),
+      el("span",{class:"partes"},partes.join(" + ")),
+      el("span",{},falta!==null&&falta>0.5?`O líquido estimado é de ${brl(r.liquido)}, e você informou ter recebido ${brl(d.rec)}.`:"Valores fora do termo de rescisão, estimados com os dados informados.")));
   } else if(falta!==null){
     res.append(el("div",{class:"hero"}, el("small",{},ex+"Resultado"), el("strong",{},"O valor recebido está de acordo com esta estimativa"),
       el("span",{},`O líquido estimado é de ${brl(r.liquido)}. Confira abaixo o FGTS e os outros direitos, que não entram no termo.`)));
@@ -372,17 +415,20 @@ function mostrar(d){
     const nome=el("input",{type:"text",id:"c-nome",placeholder:"Seu nome",autocomplete:"name","aria-label":"Seu nome",value:nomeDigitado});
     const link=el("a",{class:"btn zap",target:"_blank",rel:"noopener"},"Falar com um especialista no WhatsApp");
     const monta=()=>{ const nm=nome.value.trim(); nomeDigitado=nome.value;
-      const t=["Calculadora de Rescisão Trabalhista", nm?`Nome: ${nm}`:null,
+      const t=["Olá! Fiz a Calculadora de Rescisão e quero que um especialista confira o meu caso.", "", nm?`Nome: ${nm}`:null,
         `Salário: ${brl(d.sal)}${d.med?` + médias ${brl(d.med)}`:""}`, `Admissão: ${dmy(d.adm)}`, `Saída: ${dmy(d.sai)}`,
         `Desligamento: ${TIPOS[d.tipo]}`, `Bruto estimado: ${brl(r.bruto)}`, `Líquido estimado: ${brl(r.liquido)}`,
         d.rec!==null?`Recebido: ${brl(d.rec)}`:"Ainda não recebeu", d.rec!==null?`Diferença: ${brl(falta)}`:null,
         r.saque>0?`FGTS para sacar: ${brl(r.saque)}`:null, r.multa477>0?"Pagamento fora do prazo":null,
-        ...extras.map(x=>`${x.k}${x.v?`: ${brl(x.v)}`:""}`), `Prazo: ${dmy(r.prazo)}`].filter(Boolean).join("\n");
+        ...extras.map(x=>`${x.k}${x.v?`: ${brl(x.v)}`:""}`), `Prazo: ${dmy(r.prazo)}`].filter(x=>x!==null&&x!==false).join("\n");
+      fixoLink.href=link.href;
       link.href=`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(t)}`; };
     nome.addEventListener("input",monta); monta();
     res.append(el("h3",{},"Quer que um especialista confira a sua rescisão?"),
       el("p",{},"Análise sem custo. Um especialista do escritório confere o termo de rescisão, o FGTS e os outros direitos do seu contrato. Seus dados já vão prontos na mensagem."),
-      el("div",{class:"acoes"}, nome, link)); }
+      el("div",{class:"acoes"}, nome, link));
+    fixo.hidden=false; document.body.classList.add("com-fixo"); }
+  if(!editado){ fixo.hidden=true; document.body.classList.remove("com-fixo"); }
 
   const share=el("button",{type:"button",class:"btn ghost"},"Enviar a calculadora para alguém");
   share.addEventListener("click",async()=>{ const url=location.href.split("?")[0];
